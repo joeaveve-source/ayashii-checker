@@ -413,6 +413,8 @@
     if (/発注ルールチェック未回答/.test(t)) got.rulecheck = "no"; else if (/発注ルールチェック済/.test(t)) got.rulecheck = "yes";
     const rv = t.match(/(\d+)\s*件のレビュー/);
     if (rv){ const n = +rv[1]; got.reviews = n === 0 ? "e0" : n <= 5 ? "e1" : n <= 10 ? "e6" : n <= 30 ? "e11" : "e31"; }
+    // タイトルの下からコピーしたとき：クライアント情報の「総合評価 -」＝評価なし
+    if (!got.reviews && /総合評価\s*-/.test(t)) got.reviews = "e0";
     const hc = t.match(/募集人数\s*(\d+)\s*人/);
     if (hc){ const n = +hc[1]; got.headcount = n >= 100 ? "huge" : n >= 10 ? "big" : n >= 3 ? "mid" : "small"; }
     return got;
