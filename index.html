@@ -138,7 +138,10 @@
   }
   .copy.done{background:var(--ink);color:var(--paper)}
 
-  .disclaimer{margin-top:32px;font-size:13px;color:var(--ink-soft);line-height:1.8}
+  .limits{margin-top:40px;padding-top:24px;border-top:1.5px solid var(--ink)}
+  .limits h3{margin:0 0 12px;font-size:20px;font-weight:500;line-height:1.5}
+  .limits p{margin:0 0 12px;font-size:15px}
+  .limits p.small{margin:0;font-size:13px;color:var(--ink-soft)}
   footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-soft)}
   footer p{margin:0 0 4px}
 
@@ -264,7 +267,13 @@
       <p class="sr" id="copied" role="status"></p>
     </div>
 
-    <p class="disclaimer"><span class="ph">この結果は目安で、</span><span class="ph">怪しい案件だと</span><span class="ph">断定するものではありません。</span><span class="ph">言葉があるかどうかで、</span><span class="ph">機械的に点数を出しています。</span><span class="ph">まともな案件でも、</span><span class="ph">点数が出ることがあります。</span><span class="ph">応募するかどうかは、</span><span class="ph">ご自身で判断してください。</span></p>
+    <section class="limits" aria-labelledby="lim">
+      <h3 id="lim"><span class="ph">このチェッカーで、</span><span class="ph">完全に見抜くことは</span><span class="ph">できません</span></h3>
+      <p><span class="ph">あくまで目安にしてください。</span></p>
+      <p><span class="ph">募集文には書かれていなくても、</span><span class="ph">応募したあとのやり取りで、</span><span class="ph">結婚しているかを</span><span class="ph">聞いてくるケースがあります。</span><span class="ph">ふつうに仕事をして、</span><span class="ph">評価までもらったあとで、</span><span class="ph">スクールに勧誘されるケースも</span><span class="ph">あります。</span></p>
+      <p><span class="ph">かなり巧妙な手口もあるので、</span><span class="ph">募集文だけで</span><span class="ph">完全に判断するのは</span><span class="ph">難しいです。</span><span class="ph">募集文だけでは</span><span class="ph">100%見抜けないことを</span><span class="ph">ご理解のうえ、</span><span class="ph">応募するかどうかは、</span><span class="ph">ご自身で判断してください。</span></p>
+      <p class="small"><span class="ph">点数は、</span><span class="ph">言葉があるかどうかで</span><span class="ph">機械的に出しています。</span><span class="ph">まともな案件でも、</span><span class="ph">点数が出ることがあります。</span></p>
+    </section>
   </section>
 
   <footer>
@@ -278,41 +287,41 @@
   // 本文から探す項目（点数は大きい順）
   const TEXT_RULES = [
     { id:"family",  label:"家族や私生活に|踏み込んでいる", pts:60,
-      why:"記事の仕事に、|結婚や子どもの有無、|学生かどうかは|関係ありません。",
+      why:"記事の仕事に、|結婚や子ども、|一人暮らしかどうか、|学生かどうかは|関係ありません。",
       short:"家族や私生活を|条件にしている",
-      re:/既婚|未婚|独身|同棲|配偶者|お子さん|お子様|子ども|子供|子育て|育児|恋人|結婚|学生[^。\n]{0,8}(?:不可|NG|お断り|対象外|ご遠慮)/g },
-    { id:"money",   label:"先にお金を払わせる|言葉がある", pts:25,
+      re:/既婚|未婚|独身|同棲|配偶者|お子さん|お子様|子ども|子供|子育て|育児|恋人|結婚|一人暮らし|ひとり暮らし|生活スタイル|実家暮らし|実家住まい|学生[^。\n]{0,8}(?:不可|NG|お断り|対象外|ご遠慮)/g },
+    { id:"money",   label:"先にお金を払わせる|言葉がある", pts:30,
       why:"仕事を受ける側が|先にお金を払うのは、|よくある注意のサインです。",
       short:"仕事を受ける側が|先にお金を払う|言葉がある",
       re:/受講料|教材費|初期費用|登録料|研修費|入会金|購入が必要|購入していただ|費用が(?:かか|必要)/g },
-    { id:"lowpay",  label:"報酬が|相場より低い", pts:10,
+    { id:"lowpay",  label:"報酬が|相場より低い", pts:15,
       why:"クラウドワークス自身が|「相場に対して報酬額が|低い可能性があります」と|出しています。",
       short:"報酬が|相場より低い",
       re:/相場に対して報酬額が低い/g },
-    { id:"goal",    label:"目標や稼ぎたい金額に|触れている", pts:15,
+    { id:"goal",    label:"目標や稼ぎたい金額に|触れている", pts:20,
       why:"仕事を頼む相手の|「目標」を聞く理由は|ありません。",
       short:"目標や稼ぎたい金額に|触れている",
       re:/目標|月\s*\d+\s*万|稼ぎたい|理想のライフスタイル|独立を目指[すし]?|本業以外の収入|場所に縛られ|自由な働き方/g },
-    { id:"outside", label:"LINEやZoomなど、|外へ誘導している", pts:15,
+    { id:"outside", label:"LINEやZoomなど、|外へ誘導している", pts:20,
       why:"外の連絡先や|オンライン通話に移ってから、|勧誘される流れがあります。",
       short:"LINEやZoomなどへ|誘導している",
       re:/LINE|(?<!オン)(?<!ガイド)ライン(?:で|に|へ|登録|追加|ID)|Zoom|ZOOM|zoom|ズーム|電話|MTG|ミーティング|チャットワーク|Chatwork/g },
-    { id:"personal",label:"年齢・性別・住まいなどを|聞いている", pts:10,
-      why:"仕事の腕に|関係のない個人情報です。",
-      short:"仕事に関係のない|個人情報を聞いている",
-      re:/年齢|性別|生活スタイル|一人暮らし|実家/g },
-    { id:"newbie",  label:"未経験や挑戦したい人を|集めている", pts:10,
-      why:"ふつうは実績のある人に頼みます。|これ1つだけなら、|珍しくはありません。",
+    { id:"personal",label:"性別を|聞いている", pts:10,
+      why:"記事の仕事に、|性別は関係ありません。",
+      short:"性別を|聞いている",
+      re:/性別/g },
+    { id:"newbie",  label:"未経験や挑戦したい人を|集めている", pts:20,
+      why:"仕事を頼むときは、|ふつう実績のある人に頼みます。|未経験の人を集める案件は、|勧誘のことがあります。",
       short:"未経験や挑戦したい人を|集めている",
-      re:/挑戦してみたい|未経験|初心者歓迎|初心者OK|初心者の方|経験不問|スキル不要|初めての方/g },
+      re:/挑戦してみたい|未経験|初心者大?歓迎|初心者OK|初心者の方|経験不問|スキル不要|初めての方/g },
   ];
   // 選んでもらう項目
   const SELECT_RULES = {
     identity: { no:{pts:15, label:"本人確認をしていない", short:"本人確認を|していない", why:"本人確認は、|発注者が実在するかの|目安の1つです。"}, yes:{pts:0} },
     rulecheck:{ no:{pts:5, label:"発注ルールチェックが未回答", short:"発注ルールチェックに|答えていない", why:"クラウドワークスの規約や、|発注に必要なルールを|確かめたかどうかの印です。|まだ答えていません。"}, yes:{pts:0} },
     reviews:  { e0:{pts:20, label:"評価件数が0件", short:"評価件数が|0件", why:"これまでの取引の評価がなく、|どんな発注者か|分かりません。"},
-                e1:{pts:8, label:"評価件数が1〜5件", why:"取引の評価が、|まだ少なめです。"},
-                e6:{pts:4, label:"評価件数が6〜10件"},
+                e1:{pts:15, label:"評価件数が1〜5件", why:"取引の評価が、|まだ少なめです。"},
+                e6:{pts:8, label:"評価件数が6〜10件"},
                 e11:{pts:0},
                 e31:{pts:-20, label:"評価件数が31件以上", short:"評価件数が|31件以上ある", why:"これまでに多くの取引をしている|発注者です。|怪しさを下げています。"}, },
     icon:     { default:{pts:3, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを整えていない、|作ったばかりの発注者の|ことがあります。"}, set:{pts:0} },
@@ -411,7 +420,7 @@
       if (r.good.length) parts.push(`ただ、|${r.good.map(g => "「" + g.short + "」").join("|")}|ので、|怪しさを下げています。`);
       if (b.key === "low") parts.push("大きな注意サインは少なめですが、|条件はよく読んでください。");
     }
-    parts.push("これは目安で、|断定するものでは|ありません。|最終的には|ご自身で判断してください。");
+    parts.push("これは目安で、|断定するものでは|ありません。|あくまで参考にして、|最終的には|ご自身で判断してください。");
     return parts.join("|");
   }
 
