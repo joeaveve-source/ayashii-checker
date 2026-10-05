@@ -447,7 +447,8 @@
     }
     sel.sort((a,b) => b.pts - a.pts);
     const sum = [...hits, ...sel, ...good].reduce((a,b) => a + b.pts, 0);
-    const total = Math.max(0, Math.min(100, sum));
+    // 「絶対」はないので、0%と100%は出さない（いちばん低くて5%、いちばん高くて80%）
+    const total = Math.max(5, Math.min(80, sum));
     return { hits, sel, good, total };
   }
 
