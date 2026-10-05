@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>怪しい案件チェッカー｜応募する前に、怪しさを目安で確かめる</title>
+<meta name="description" content="クラウドワークスなどの案件の本文を貼って、発注者の情報を選ぶだけ。怪しさの目安と、どこが怪しいかが分かります。貼った文章はどこにも送られません。">
+<meta property="og:title" content="怪しい案件チェッカー">
+<meta property="og:description" content="応募する前に、案件の怪しさを目安で確かめる。貼った文章はどこにも送られません。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta name="theme-color" content="#1C1E21">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 30 28H2Z' fill='%23F5C400' stroke='%231C1E21' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M16 12v7' stroke='%231C1E21' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='23.5' r='1.8' fill='%231C1E21'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F5F2;
+    --ink:#1C1E21;
+    --ink-soft:#4A4F54;
+    --rule:#C9CDC6;
+    --yellow:#F5C400;
+    --red:#C62D1F;
+    --white:#FCFDFB;
+    --tape:repeating-linear-gradient(-45deg,var(--yellow) 0 14px,var(--ink) 14px 28px);
+    --ease:cubic-bezier(0.22,1,0.36,1);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Noto Sans JP",system-ui,sans-serif;font-size:16px;line-height:1.8;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:40px 24px 64px}
+  h1,h2,h3,.num{font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif}
+  a{color:var(--ink)}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  .ph{display:inline-block}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  p{text-wrap:pretty}
+
+  /* ヘッダー */
+  .kicker{margin:0 0 8px;font-size:13px;color:var(--ink-soft);letter-spacing:0.04em}
+  h1{margin:0;font-size:clamp(34px,9vw,46px);font-weight:500;line-height:1.2;letter-spacing:-0.02em}
+  h1 .tight{letter-spacing:-0.1em}
+  h1 .mark{display:inline-block;width:0.78em;height:0.78em;margin-right:0.18em;vertical-align:-0.04em}
+  .lead{margin:16px 0 0;font-size:16px}
+  .safe{margin:8px 0 0;font-size:15px;color:var(--ink-soft)}
+
+  /* 手順 */
+  .step{margin-top:40px;padding-top:24px;border-top:1px solid var(--rule)}
+  .step h2{margin:0 0 8px;font-size:20px;font-weight:500;letter-spacing:-0.01em;display:flex;gap:12px;align-items:baseline}
+  .step h2 .n{font-size:15px;font-weight:500;color:var(--paper);background:var(--ink);min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-feature-settings:"tnum"}
+  .help{margin:0 0 16px;font-size:15px;color:var(--ink-soft)}
+  textarea{
+    width:100%;min-height:220px;padding:16px;border:1.5px solid var(--ink);border-radius:0;background:var(--white);
+    font:inherit;font-size:16px;line-height:1.7;color:var(--ink);resize:vertical
+  }
+  textarea::placeholder{color:#8A8F93}
+  .row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:8px;align-items:center}
+  .textbtn{background:none;border:none;padding:8px 0;font:inherit;font-size:15px;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;min-height:44px}
+  .demo-note{font-size:13px;color:var(--ink-soft)}
+
+  fieldset{border:none;margin:0;padding:0 0 18px;border-bottom:1px dashed var(--rule)}
+  fieldset:last-of-type{border-bottom:none}
+  legend{padding:18px 0 0;font-weight:500;font-size:16px}
+  .where{display:block;font-size:13px;color:var(--ink-soft);font-weight:400}
+  .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .opts label{position:relative}
+  .opts input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+  .opts span{
+    display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1.5px solid var(--ink);border-radius:999px;
+    background:var(--white);font-size:15px;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease)
+  }
+  .opts input:checked + span{background:var(--ink);color:var(--paper)}
+  .opts input:focus-visible + span{outline:3px solid var(--ink);outline-offset:3px}
+
+  .go{
+    display:block;width:100%;margin-top:32px;min-height:56px;border:none;border-radius:999px;background:var(--ink);color:var(--paper);
+    font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;font-size:20px;font-weight:500;letter-spacing:0;cursor:pointer;
+    transition:transform .2s var(--ease)
+  }
+  .go:active{transform:translateY(1px)}
+  .error{margin:12px 0 0;font-size:15px;color:var(--red);font-weight:500}
+
+  /* 結果 */
+  .result{margin-top:64px;scroll-margin-top:24px}
+  .result[hidden]{display:none}
+  .result-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .result-head h2{margin:0;font-size:15px;font-weight:500;color:var(--ink-soft)}
+  .score{margin:0;line-height:1}
+  .score .num{font-size:clamp(64px,18vw,96px);font-weight:700;font-feature-settings:"tnum";letter-spacing:-0.03em}
+  .score .pct{font-family:"Zen Kaku Gothic New",sans-serif;font-size:28px;font-weight:700;margin-left:2px}
+
+  .meter{position:relative;margin-top:16px;height:56px;border:2px solid var(--ink);background:var(--white)}
+  .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);transition:width .9s var(--ease)}
+  .meter:not(.tape) .fill{top:calc(50% - 2px);bottom:calc(50% - 2px)}
+  .meter.tape .fill{background:var(--tape)}
+  .tick{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--ink);opacity:.3;z-index:1}
+  .meter.tape .tick{width:3px;margin-left:-1.5px;background:var(--paper);opacity:1}
+  .tag{
+    position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;
+    padding:4px 14px;background:var(--red);color:var(--white);box-shadow:0 0 0 2px var(--ink);
+    font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;font-size:20px;letter-spacing:0.08em;line-height:1.3
+  }
+  .tag[hidden]{display:none}
+  .ticklabels{position:relative;height:22px;margin-top:4px;font-size:13px;color:var(--ink-soft);font-feature-settings:"tnum"}
+  .ticklabels span{position:absolute;transform:translateX(-50%)}
+  .ticklabels .t0{left:0;transform:none}
+  .ticklabels .t30{left:30%}
+  .ticklabels .t60{left:60%}
+  .ticklabels .t100{left:100%;transform:translateX(-100%)}
+
+  .verdict{margin:24px 0 0;font-size:24px;font-weight:500;line-height:1.4;letter-spacing:-0.01em}
+
+  .group{margin:40px 0 0;font-size:16px;font-weight:500}
+  .group + .hits{margin-top:8px}
+  .hits{margin:0;padding:0;list-style:none;border-top:1.5px solid var(--ink)}
+  .hits li{padding:16px 0;border-bottom:1px solid var(--rule)}
+  .hits .t{font-weight:500;line-height:1.5}
+  .hits .why{margin:4px 0 0;font-size:15px}
+  .hits .words{margin:4px 0 0;font-size:13px;color:var(--ink-soft)}
+  .none{margin:32px 0 0;color:var(--ink-soft)}
+
+  .summary{margin-top:40px}
+  .summary h3{margin:0 0 8px;font-size:20px;font-weight:500}
+  .summary p{margin:0}
+
+  .ai{margin-top:40px;padding:20px 16px;background:var(--white);border:1px solid var(--rule)}
+  .ai p{margin:0 0 16px;font-size:15px}
+  .copy{
+    display:block;width:100%;text-align:center;min-height:52px;padding:12px;line-height:1.5;border:1.5px solid var(--ink);border-radius:999px;
+    background:var(--paper);color:var(--ink);font:inherit;font-size:15px;font-weight:500;cursor:pointer
+  }
+  .copy.done{background:var(--ink);color:var(--paper)}
+
+  .disclaimer{margin-top:32px;font-size:13px;color:var(--ink-soft);line-height:1.8}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-soft)}
+  footer p{margin:0 0 4px}
+
+  @media (max-width:719px){
+    .meter,.ticklabels{margin-left:-24px;margin-right:-24px}
+    .meter{border-left:0;border-right:0}
+    .ticklabels .t0{left:16px}
+    .ticklabels .t100{left:calc(100% - 16px)}
+    .tag{right:16px}
+  }
+  @media (min-width:720px){
+    .wrap{padding:64px 40px 96px}
+    .ai{padding:24px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header>
+    <p class="kicker">アベジョのAI仕事術｜LINE特典</p>
+    <h1><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 30 28H2Z" fill="#F5C400" stroke="#1C1E21" stroke-width="2.5" stroke-linejoin="round"/><path d="M16 12v7" stroke="#1C1E21" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="23.5" r="1.8" fill="#1C1E21"/></svg><span class="ph">怪しい案件</span><span class="ph tight">チェッカー</span></h1>
+    <p class="lead"><span class="ph">応募する前に、</span><span class="ph">その案件の怪しさを</span><span class="ph">目安で確かめます。</span></p>
+    <p class="safe"><span class="ph">貼った文章は、</span><span class="ph">このページの中だけで判定します。</span><span class="ph">どこにも送られません。</span></p>
+  </header>
+
+  <form id="form" novalidate>
+    <section class="step" aria-labelledby="s1">
+      <h2 id="s1"><span class="n">1</span>案件の本文を貼る</h2>
+      <p class="help"><span class="ph">クラウドワークスなどの案件ページで、</span><span class="ph">タイトルと「仕事の詳細」を</span><span class="ph">コピーして貼ってください。</span><span class="ph">応募方法や応募の条件まで</span><span class="ph">入っていると、</span><span class="ph">くわしく判定できます。</span></p>
+      <label for="text" class="sr" style="position:absolute;left:-9999px">案件の本文</label>
+      <textarea id="text" placeholder="ここに案件の本文を貼り付けます"></textarea>
+      <div class="row">
+        <button type="button" class="textbtn" id="demo">架空の案件で試す</button>
+        <button type="button" class="textbtn" id="clear">消す</button>
+        <span class="demo-note" id="demoNote" hidden>デモ用の架空の案件です（実在の案件ではありません）</span>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="s2">
+      <h2 id="s2"><span class="n">2</span>発注者の情報を選ぶ</h2>
+      <p class="help"><span class="ph">案件ページの</span><span class="ph">発注者（クライアント）の欄で</span><span class="ph">確かめます。</span><span class="ph">分からないものは、</span><span class="ph">選ばなくても大丈夫です。</span></p>
+
+      <fieldset>
+        <legend>本人確認<span class="where">発注者の名前の近くに「本人確認済み」の印があるか</span></legend>
+        <div class="opts">
+          <label><input type="radio" name="identity" value="no"><span>していない</span></label>
+          <label><input type="radio" name="identity" value="yes"><span>している</span></label>
+          <label><input type="radio" name="identity" value="unknown"><span>分からない</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>レビュー（評価）の数<span class="where">発注者の評価が何件あるか</span></legend>
+        <div class="opts">
+          <label><input type="radio" name="reviews" value="zero"><span>0件</span></label>
+          <label><input type="radio" name="reviews" value="few"><span>1〜9件</span></label>
+          <label><input type="radio" name="reviews" value="many"><span>10件以上</span></label>
+          <label><input type="radio" name="reviews" value="unknown"><span>分からない</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>アイコン<span class="where">発注者のプロフィール画像</span></legend>
+        <div class="opts">
+          <label><input type="radio" name="icon" value="default"><span>初期のまま</span></label>
+          <label><input type="radio" name="icon" value="set"><span>写真やロゴがある</span></label>
+          <label><input type="radio" name="icon" value="unknown"><span>分からない</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>募集人数<span class="where">「応募状況」の欄の募集人数</span></legend>
+        <div class="opts">
+          <label><input type="radio" name="headcount" value="big"><span>10人以上</span></label>
+          <label><input type="radio" name="headcount" value="mid"><span>3〜9人</span></label>
+          <label><input type="radio" name="headcount" value="small"><span>1〜2人</span></label>
+          <label><input type="radio" name="headcount" value="unknown"><span>分からない</span></label>
+        </div>
+      </fieldset>
+    </section>
+
+    <button type="submit" class="go">チェックする</button>
+    <p class="error" id="error" role="alert" hidden>案件の本文を貼るか、発注者の情報を1つ以上選んでください。</p>
+  </form>
+
+  <section class="result" id="result" aria-live="polite" hidden>
+    <div class="result-head">
+      <h2>怪しさ（目安）</h2>
+      <p class="score"><span class="num" id="score">0</span><span class="pct">%</span></p>
+    </div>
+    <div class="meter" id="meter" role="img" aria-label="怪しさのメーター">
+      <div class="fill" id="fill"></div>
+      <span class="tick" style="left:30%"></span>
+      <span class="tick" style="left:60%"></span>
+      <span class="tag" id="tag" hidden>要注意</span>
+    </div>
+    <div class="ticklabels" aria-hidden="true"><span class="t0">0</span><span class="t30">30</span><span class="t60">60</span><span class="t100">100</span></div>
+
+    <h3 class="verdict" id="verdict"></h3>
+
+    <div id="hits"></div>
+
+    <div class="summary">
+      <h3>総評</h3>
+      <p id="summary"></p>
+    </div>
+
+    <div class="ai">
+      <p><span class="ph">もっと詳しく知りたいときは、</span><span class="ph">下のボタンで文章をコピーして、</span><span class="ph">ChatGPTなどのAIに</span><span class="ph">貼ってください。</span><span class="ph">チェックの結果と、</span><span class="ph">貼った本文が入っています。</span></p>
+      <button type="button" class="copy" id="copy"><span class="ph">もっと詳しくAIに聞く用の</span><span class="ph">文章をコピー</span></button>
+      <p class="sr" id="copied" role="status"></p>
+    </div>
+
+    <p class="disclaimer"><span class="ph">言葉があるかどうかで、</span><span class="ph">機械的に点数を出しています。</span><span class="ph">まともな案件でも、</span><span class="ph">点数が出ることがあります。</span></p>
+  </section>
+
+  <footer>
+    <p><span class="ph">何回も怪しい案件に</span><span class="ph">引っかかったことがある方は、</span><span class="ph">応募する前に、</span><span class="ph">毎回これで確かめてみてください。</span></p>
+    <p><span class="ph">作った人：アベジョ</span><span class="ph">（元芸人で、相方をAIに変えた）</span>｜<a href="https://www.youtube.com/@abejo_ai" target="_blank" rel="noopener">YouTube「アベジョのAI仕事術」</a></p>
+  </footer>
+</main>
+
+<script>
+(() => {
+  // 本文から探す項目（点数は大きい順）
+  const TEXT_RULES = [
+    { id:"family",  label:"家族や私生活に|踏み込んでいる", pts:25,
+      why:"記事の仕事に、|結婚や子どもの有無は|関係ありません。",
+      short:"家族や私生活を|条件にしている",
+      re:/既婚|未婚|独身|同棲|配偶者|お子さん|お子様|子ども|子供|子育て|育児|恋人|結婚/g },
+    { id:"money",   label:"先にお金を払わせる|言葉がある", pts:25,
+      why:"仕事を受ける側が|先にお金を払うのは、|よくある注意のサインです。",
+      short:"仕事を受ける側が|先にお金を払う|言葉がある",
+      re:/受講料|教材費|初期費用|登録料|研修費|入会金|購入が必要|購入していただ|費用が(?:かか|必要)/g },
+    { id:"lecture", label:"講師・説明会・研修が|出てくる", pts:20,
+      why:"記事の仕事に、|講師や説明会は、|ふつう要りません。",
+      short:"講師や説明会が|出てくる",
+      re:/講師|説明会|レクチャー|研修|勉強会|セミナー|カウンセリング|オリエンテーション/g },
+    { id:"goal",    label:"目標や稼ぎたい金額に|触れている", pts:15,
+      why:"仕事を頼む相手の|「目標」を聞く理由は|ありません。",
+      short:"目標や稼ぎたい金額に|触れている",
+      re:/目標|月\s*\d+\s*万|稼ぎたい|理想のライフスタイル|独立を目指|本業以外の収入|場所に縛られ|自由な働き方/g },
+    { id:"outside", label:"LINEやZoomなど、|外へ誘導している", pts:15,
+      why:"外の連絡先や|オンライン通話に移ってから、|勧誘される流れがあります。",
+      short:"LINEやZoomなどへ|誘導している",
+      re:/LINE|(?<!オン)(?<!ガイド)ライン(?:で|に|へ|登録|追加|ID)|Zoom|ZOOM|zoom|ズーム|電話|MTG|ミーティング|チャットワーク|Chatwork/g },
+    { id:"personal",label:"年齢・性別・本業などを|聞いている", pts:10,
+      why:"仕事の腕に|関係のない個人情報です。",
+      short:"仕事に関係のない|個人情報を聞いている",
+      re:/年齢|性別|生活スタイル|一人暮らし|実家|本業|雇用形態|労働時間|職業/g },
+    { id:"newbie",  label:"未経験や挑戦したい人を|集めている", pts:10,
+      why:"ふつうは実績のある人に頼みます。|これ1つだけなら、|珍しくはありません。",
+      short:"未経験や挑戦したい人を|集めている",
+      re:/挑戦してみたい|未経験|初心者歓迎|初心者OK|初心者の方|経験不問|スキル不要|初めての方/g },
+  ];
+  // 選んでもらう項目
+  const SELECT_RULES = {
+    identity: { no:{pts:15, label:"本人確認をしていない", short:"本人確認を|していない", why:"本人確認は、|発注者が実在するかの|目安の1つです。"}, unknown:{pts:5, label:"本人確認が分からない"}, yes:{pts:0} },
+    reviews:  { zero:{pts:15, label:"レビューが0件", short:"レビューが|1件もない", why:"これまでの取引の評価がなく、|どんな発注者か|分かりません。"}, few:{pts:5, label:"レビューが1〜9件"}, unknown:{pts:5, label:"レビューの数が分からない"}, many:{pts:0} },
+    icon:     { default:{pts:10, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを整えていない、|作ったばかりの発注者の|ことがあります。"}, unknown:{pts:3, label:"アイコンが分からない"}, set:{pts:0} },
+    headcount:{ big:{pts:10, label:"一度に10人以上を募集", short:"一度に10人以上を|募集している", why:"ライターを一度に10人以上|集めることは、|ふつうはあまりありません。"}, mid:{pts:3, label:"3〜9人を募集"}, unknown:{pts:3, label:"募集人数が分からない"}, small:{pts:0} },
+  };
+  const SELECT_NAMES = { identity:"本人確認", reviews:"レビュー", icon:"アイコン", headcount:"募集人数" };
+
+  const DEMO = "（デモ用の架空の案件です）\n【急募★未経験OK】旅の思い出を書くWebライター募集★\n文字単価1.0円／1記事1,500文字〜\n\nこんな方におすすめ\n・ライティングに挑戦してみたい方\n・在宅で月5万円を目指したい方\n\n初回は、講師がオンラインの説明会でレクチャーします。\n夜にZoomでミーティングを行うため、子育て中の方のご応募はご遠慮ください。\n\n応募方法\nお名前・年齢・性別・ご職業・配偶者の有無を書いてご応募ください。\nくわしくは公式LINEでご案内します。";
+
+  const $ = (id) => document.getElementById(id);
+  const plain = (t) => t.replaceAll("|", "");
+  function phrases(el, t){ el.textContent = ""; for (const part of t.split("|")){ const sp = document.createElement("span"); sp.className = "ph"; sp.textContent = part; el.appendChild(sp); } }
+  const form = $("form"), text = $("text");
+
+  $("demo").addEventListener("click", () => {
+    text.value = DEMO;
+    $("demoNote").hidden = false;
+    const pick = { identity:"no", reviews:"zero", icon:"default", headcount:"big" };
+    for (const [n, v] of Object.entries(pick)) form.querySelector(`input[name="${n}"][value="${v}"]`).checked = true;
+    text.focus();
+  });
+  $("clear").addEventListener("click", () => {
+    text.value = ""; $("demoNote").hidden = true;
+    form.querySelectorAll("input[type=radio]").forEach(r => r.checked = false);
+    $("result").hidden = true; $("error").hidden = true; text.focus();
+  });
+
+  function selected(name){ const el = form.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null; }
+
+  function judge(){
+    const raw = text.value.normalize("NFKC");
+    const hits = [];
+    for (const r of TEXT_RULES){
+      const found = [...new Set((raw.match(r.re) || []).map(s => s.trim()))];
+      if (found.length) hits.push({ kind:"text", ...r, words: found.slice(0,5) });
+    }
+    const sel = [];
+    for (const [name, map] of Object.entries(SELECT_RULES)){
+      const v = selected(name);
+      if (v && map[v] && map[v].pts > 0) sel.push({ kind:"select", name, ...map[v] });
+    }
+    const total = Math.min(100, [...hits, ...sel].reduce((a,b) => a + b.pts, 0));
+    return { hits, sel, total };
+  }
+
+  function band(score){
+    if (score >= 60) return { key:"high", text:"応募は控えたほうが|よさそうです" };
+    if (score >= 30) return { key:"mid",  text:"応募する前に、|当てはまったところを|確かめてください" };
+    return { key:"low", text:"大きな注意サインは|少なめです" };
+  }
+
+  function summaryText(r){
+    const b = band(r.total);
+    const parts = [];
+    const texts = r.hits.slice().sort((a,b)=>b.pts-a.pts).map(h => h.short);
+    const sels  = r.sel.filter(s => s.short).map(s => s.short);
+    const rest  = Math.max(0, texts.length - 2) + Math.max(0, sels.length - 2);
+    const q = (arr) => arr.slice(0,2).map(t => "「" + t + "」").join("|");
+    if (!texts.length && !sels.length){
+      parts.push("本文と発注者の情報からは、|大きな注意サインは|見つかりませんでした。|それでも、|報酬・納期・連絡の取り方は、|応募の前に|よく読んでください。");
+    } else {
+      if (texts.length) parts.push(`この案件は、|${q(texts)}|点が気になります。`);
+      if (sels.length) parts.push(`${texts.length ? "さらに、|" : ""}${q(sels)}|ので、|怪しさが増します。`);
+      if (rest) parts.push(`ほかにも${rest}つ、|当てはまっています。`);
+      if (b.key === "low") parts.push("大きな注意サインは少なめですが、|条件はよく読んでください。");
+    }
+    parts.push("これは目安で、|断定するものでは|ありません。|最終的には|ご自身で判断してください。");
+    return parts.join("|");
+  }
+
+  function aiPrompt(r){
+    const lines = [];
+    lines.push("次は、クラウドソーシング（クラウドワークスなど）の募集文です。応募する前に気をつけたほうがいい点を、副業の初心者にも分かるように教えてください。怪しいと断定はせず、応募する前に確かめる方法も教えてください。");
+    lines.push("");
+    lines.push(`【怪しい案件チェッカーの結果】怪しさ ${r.total}%（目安）`);
+    if (r.hits.length) lines.push("当てはまったところ：" + r.hits.map(h => `${plain(h.label)}（${h.words.join("・")}）`).join("／"));
+    const info = Object.keys(SELECT_NAMES).map(n => {
+      const v = selected(n); const lab = v ? form.querySelector(`input[name="${n}"][value="${v}"]`).nextElementSibling.textContent : "未選択";
+      return `${SELECT_NAMES[n]}＝${lab}`;
+    }).join("／");
+    lines.push("発注者の情報：" + info);
+    lines.push("");
+    lines.push("【募集文】");
+    lines.push(text.value.trim() || "（本文は貼られていません）");
+    return lines.join("\n");
+  }
+
+  let last = null;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const anySel = Object.keys(SELECT_RULES).some(n => selected(n));
+    if (!text.value.trim() && !anySel){ $("error").hidden = false; text.focus(); return; }
+    $("error").hidden = true;
+    const r = judge(); last = r;
+    const b = band(r.total);
+
+    $("score").textContent = r.total;
+    const meter = $("meter"), fill = $("fill");
+    meter.classList.toggle("tape", r.total >= 30);
+    meter.setAttribute("aria-label", `怪しさ ${r.total}%${b.key === "high" ? "（要注意）" : ""}`);
+    fill.style.width = "0";
+    phrases($("verdict"), b.text);
+    $("tag").hidden = b.key !== "high";
+
+    const box = $("hits"); box.innerHTML = "";
+    const groups = [
+      ["本文から見つかったこと", r.hits.slice().sort((a,b)=>b.pts-a.pts)],
+      ["発注者の情報", r.sel],
+    ];
+    if (!r.hits.length && !r.sel.length){
+      const p = document.createElement("p"); p.className = "none";
+      p.textContent = "当てはまったところはありませんでした。"; box.appendChild(p);
+    }
+    for (const [title, list] of groups){
+      if (!list.length) continue;
+      const h = document.createElement("h4"); h.className = "group"; h.textContent = title;
+      const ul = document.createElement("ul"); ul.className = "hits";
+      for (const it of list){
+        const li = document.createElement("li");
+        const t = document.createElement("div"); t.className = "t"; phrases(t, it.label); li.appendChild(t);
+        if (it.why){ const w = document.createElement("p"); w.className = "why"; phrases(w, it.why); li.appendChild(w); }
+        if (it.words){ const w = document.createElement("p"); w.className = "words"; w.textContent = "見つかった言葉：" + it.words.join("・"); li.appendChild(w); }
+        ul.appendChild(li);
+      }
+      box.append(h, ul);
+    }
+    phrases($("summary"), summaryText(r));
+    resetCopy();
+
+    const res = $("result"); res.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = r.total + "%"; }));
+    res.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" });
+  });
+
+  $("copy").addEventListener("click", async () => {
+    if (!last) return;
+    const s = aiPrompt(last);
+    try { await navigator.clipboard.writeText(s); }
+    catch {
+      const ta = document.createElement("textarea"); ta.value = s; ta.setAttribute("readonly",""); ta.style.position = "absolute"; ta.style.left = "-9999px";
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+    }
+    const btn = $("copy");
+    btn.classList.add("done"); btn.textContent = "コピーしました";
+    $("copied").textContent = "コピーしました。ChatGPTなどのAIに貼り付けてください。";
+    clearTimeout(copyTimer); copyTimer = setTimeout(resetCopy, 4000);
+  });
+  let copyTimer = null;
+  function resetCopy(){
+    const btn = $("copy"); btn.classList.remove("done");
+    phrases(btn, "もっと詳しくAIに聞く用の|文章をコピー");
+    $("copied").textContent = "";
+  }
+})();
+</script>
+</body>
+</html>
