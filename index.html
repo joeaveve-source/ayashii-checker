@@ -60,14 +60,17 @@
   h1 .tight{letter-spacing:-0.1em}
   h1 .mark{display:inline-block;width:0.78em;height:0.78em;margin-right:0.16em;vertical-align:-0.04em}
   .bubble{
-    position:relative;display:inline-block;margin:18px 0 0 4px;padding:8px 16px;background:var(--white);
+    position:relative;display:inline-block;margin:0 0 44px;padding:10px 16px;background:var(--white);
     border:1.5px solid var(--ink);border-radius:20px;transform:rotate(-2deg);
     font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;font-size:16px;line-height:1.5
   }
   .bubble::after{
-    content:"";position:absolute;left:22px;top:-7px;width:12px;height:12px;background:var(--white);
-    border-left:1.5px solid var(--ink);border-top:1.5px solid var(--ink);transform:rotate(45deg)
+    content:"";position:absolute;right:-7.5px;top:50%;margin-top:-6px;width:12px;height:12px;background:var(--white);
+    border-right:1.5px solid var(--ink);border-top:1.5px solid var(--ink);transform:rotate(45deg)
   }
+  /* 右に顔写真、顔から吹き出し */
+  .talk{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:18px;border-bottom:1.5px solid var(--ink)}
+  .face{display:block;flex:none;width:132px;height:auto;margin-right:-4px}
   .lead{margin:20px 0 0;font-size:20px;font-weight:500;line-height:1.6}
   .safe{margin:16px 0 0;padding-top:14px;border-top:1px dashed var(--rule);font-size:15px;color:var(--ink-soft);line-height:1.8}
   /* 判子「LINE特典」 */
@@ -202,6 +205,7 @@
     .hero{padding:48px 40px 40px}
     .stamp{margin:-30px -12px 0 16px;width:92px;height:92px}
     .bubble br{display:none}
+    .face{width:168px}
     .stamp b{font-size:16px}
     .stamp span{font-size:22px}
     .ai{padding:24px}
@@ -220,7 +224,10 @@
       <p class="stamp" aria-hidden="true"><b>LINE</b><span>特典</span></p>
     </div>
     <h1><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 30 28H2Z" fill="#F5C400" stroke="#1C1E21" stroke-width="2.5" stroke-linejoin="round"/><path d="M16 12v7" stroke="#1C1E21" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="23.5" r="1.8" fill="#1C1E21"/></svg><span class="ph">怪しい案件</span><span class="ph tight">チェッカー</span></h1>
-    <p class="bubble">奥さん、<br><span class="ph">騙されてるかもしれませんよ</span></p>
+    <div class="talk">
+      <p class="bubble">奥さん、<br><span class="ph">騙されてるかも</span><span class="ph">しれませんよ</span></p>
+      <img class="face" src="abejo.webp" alt="口元に手を当てて、ささやくアベジョ" width="320" height="276">
+    </div>
     <p class="lead"><span class="ph">応募する</span><span class="ph">前に、</span><span class="ph">その</span><span class="ph">案件の</span><span class="ph">怪しさを</span><span class="ph">目安で</span><span class="ph">確かめます。</span></p>
     <p class="safe"><span class="ph">貼った</span><span class="ph">文章は、</span><span class="ph">この</span><span class="ph">ページの</span><span class="ph">中だけで</span><span class="ph">判定します。</span><span class="ph">どこにも</span><span class="ph">送られません。</span><br><span class="ph">結果は</span><span class="ph">目安で、</span><span class="ph">怪しい</span><span class="ph">案件だと</span><span class="ph">断定する</span><span class="ph">ものではありません。</span></p>
   </header>
