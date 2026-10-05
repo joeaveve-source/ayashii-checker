@@ -24,8 +24,15 @@
     --yellow:#F5C400;
     --red:#C62D1F;
     --white:#FCFDFB;
+    --grid:rgba(28,30,33,.045);
     --tape:repeating-linear-gradient(-45deg,var(--yellow) 0 14px,var(--ink) 14px 28px);
     --ease:cubic-bezier(0.22,1,0.36,1);
+    /* 紙の四隅の印（裁ちトンボ風の二重線） */
+    --c-tl:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%231C1E21' stroke-width='1.2'%3E%3Cpath d='M1 21V1H21'/%3E%3Cpath d='M5 21V5H21' opacity='.4'/%3E%3C/svg%3E");
+    --c-tr:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%231C1E21' stroke-width='1.2'%3E%3Cpath d='M21 21V1H1'/%3E%3Cpath d='M17 21V5H1' opacity='.4'/%3E%3C/svg%3E");
+    --c-bl:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%231C1E21' stroke-width='1.2'%3E%3Cpath d='M1 1V21H21'/%3E%3Cpath d='M5 1V17H21' opacity='.4'/%3E%3C/svg%3E");
+    --c-br:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%231C1E21' stroke-width='1.2'%3E%3Cpath d='M21 1V21H1'/%3E%3Cpath d='M17 1V17H1' opacity='.4'/%3E%3C/svg%3E");
+    --corners:var(--c-tl) top 10px left 10px/22px no-repeat, var(--c-tr) top 10px right 10px/22px no-repeat, var(--c-bl) bottom 10px left 10px/22px no-repeat, var(--c-br) bottom 10px right 10px/22px no-repeat;
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
@@ -33,67 +40,87 @@
     margin:0;background:var(--paper);color:var(--ink);
     font-family:"Noto Sans JP",system-ui,sans-serif;font-size:16px;line-height:1.8;
   }
-  .wrap{max-width:640px;margin:0 auto;padding:40px 24px 64px}
-  h1,h2,h3,.num{font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif}
+  /* ページの一番上の、黄黒テープの細い帯 */
+  body::before{content:"";display:block;height:6px;background:var(--tape)}
+  .wrap{max-width:640px;margin:0 auto;padding:32px 16px 64px}
+  h1,h2,h3,h4,.num{font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif}
   a{color:var(--ink)}
   :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   .ph{display:inline-block}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   p{text-wrap:pretty}
 
-  /* ヘッダー */
-  .kicker{margin:0 0 8px;font-size:13px;color:var(--ink-soft);letter-spacing:0.04em}
-  h1{margin:0;font-size:clamp(34px,9vw,46px);font-weight:500;line-height:1.2;letter-spacing:-0.02em}
+  /* 白い紙のカード（四隅に印） */
+  .sheet{position:relative;background:var(--corners),var(--white);border:1px solid var(--rule);padding:32px 22px 30px}
+
+  /* 冒頭の紙 */
+  .hero{background:var(--c-tl) top 10px left 10px/22px no-repeat,var(--c-bl) bottom 10px left 10px/22px no-repeat,var(--c-br) bottom 10px right 10px/22px no-repeat,linear-gradient(var(--grid) 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/16px 16px,var(--white);padding:36px 22px 32px}
+  .kicker{margin:0 0 12px;font-size:13px;color:var(--ink-soft);letter-spacing:0.06em}
+  h1{margin:0;font-size:clamp(34px,9.5vw,48px);font-weight:700;line-height:1.18;letter-spacing:-0.02em}
   h1 .tight{letter-spacing:-0.1em}
-  h1 .mark{display:inline-block;width:0.78em;height:0.78em;margin-right:0.18em;vertical-align:-0.04em}
-  .lead{margin:16px 0 0;font-size:16px}
-  .safe{margin:8px 0 0;font-size:15px;color:var(--ink-soft)}
+  h1 .mark{display:inline-block;width:0.78em;height:0.78em;margin-right:0.16em;vertical-align:-0.04em}
+  .lead{margin:20px 0 0;font-size:20px;font-weight:500;line-height:1.6}
+  .safe{margin:16px 0 0;padding-top:14px;border-top:1px dashed var(--rule);font-size:15px;color:var(--ink-soft);line-height:1.8}
+  /* 判子「LINE特典」 */
+  .stamp{
+    position:absolute;top:-14px;right:8px;width:84px;height:84px;border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:var(--red);border:2.5px solid var(--red);box-shadow:inset 0 0 0 3px transparent,inset 0 0 0 4.5px var(--red);
+    background:none;transform:rotate(-12deg);
+    font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;line-height:1.1;letter-spacing:0.04em;pointer-events:none
+  }
+  .stamp b{font-size:15px;font-weight:700}
+  .stamp span{font-size:20px}
 
   /* 手順 */
-  .step{margin-top:40px;padding-top:24px;border-top:1px solid var(--rule)}
-  .step h2{margin:0 0 8px;font-size:20px;font-weight:500;letter-spacing:-0.01em;display:flex;gap:12px;align-items:baseline}
-  .step h2 .n{font-size:15px;font-weight:500;color:var(--paper);background:var(--ink);min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-feature-settings:"tnum"}
-  .help{margin:0 0 16px;font-size:15px;color:var(--ink-soft)}
+  form{margin-top:48px}
+  .step{margin-top:24px}
+  .step h2{margin:0 0 10px;font-size:20px;font-weight:500;letter-spacing:-0.01em;line-height:1.4;display:flex;gap:12px;align-items:center}
+  .step h2 .n{flex:none;font-size:15px;font-weight:700;color:var(--white);background:var(--ink);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-feature-settings:"tnum"}
+  .help{margin:0 0 16px;font-size:15px;color:var(--ink-soft);line-height:1.75}
   textarea{
-    width:100%;min-height:220px;padding:16px;border:1.5px solid var(--ink);border-radius:0;background:var(--white);
+    width:100%;min-height:200px;padding:14px;border:1.5px solid var(--ink);border-radius:0;background:var(--paper);
     font:inherit;font-size:16px;line-height:1.7;color:var(--ink);resize:vertical
   }
-  textarea::placeholder{color:#8A8F93}
-  .row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:8px;align-items:center}
+  textarea:focus{background:var(--white)}
+  textarea::placeholder{color:#7D8287}
+  .row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:4px;align-items:center;justify-content:flex-end}
   .textbtn{background:none;border:none;padding:8px 0;font:inherit;font-size:15px;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;min-height:44px}
 
   fieldset{border:none;margin:0;padding:0 0 18px;border-bottom:1px dashed var(--rule)}
-  fieldset:last-of-type{border-bottom:none}
+  fieldset:last-of-type{border-bottom:none;padding-bottom:0}
   legend{padding:18px 0 0;font-weight:500;font-size:16px}
   .where{display:block;font-size:13px;color:var(--ink-soft);font-weight:400}
   .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
   .opts label{position:relative}
   .opts input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
   .opts span{
-    display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1.5px solid var(--ink);border-radius:999px;
-    background:var(--white);font-size:15px;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease)
+    display:inline-flex;align-items:center;min-height:44px;padding:0 13px;border:1.5px solid var(--ink);border-radius:999px;
+    background:var(--paper);font-size:15px;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease)
   }
-  .opts input:checked + span{background:var(--ink);color:var(--paper)}
+  .opts input:checked + span{background:var(--ink);color:var(--white)}
   .opts input:focus-visible + span{outline:3px solid var(--ink);outline-offset:3px}
 
+  /* チェックするボタン（二重枠） */
   .go{
-    display:block;width:100%;margin-top:32px;min-height:56px;border:none;border-radius:999px;background:var(--ink);color:var(--paper);
-    font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;font-size:20px;font-weight:500;letter-spacing:0;cursor:pointer;
+    display:block;width:100%;margin-top:28px;min-height:62px;border:none;border-radius:999px;background:var(--ink);color:var(--white);
+    box-shadow:inset 0 0 0 5px var(--ink),inset 0 0 0 6px rgba(252,253,251,.55);
+    font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;font-size:20px;font-weight:700;letter-spacing:0.06em;cursor:pointer;
     transition:transform .2s var(--ease)
   }
   .go:active{transform:translateY(1px)}
-  .auto{margin:0 0 8px;padding:10px 14px;background:var(--white);border-left:4px solid var(--yellow);font-size:15px}
+  .auto{margin:0 0 4px;padding:10px 14px;background:var(--paper);border:1px solid var(--rule);font-size:15px}
   .auto[hidden]{display:none}
   .error{margin:12px 0 0;font-size:15px;color:var(--red);font-weight:500}
 
   /* 結果 */
-  .result{margin-top:64px;scroll-margin-top:24px}
+  .result{margin-top:56px;scroll-margin-top:16px}
   .result[hidden]{display:none}
   .result-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .result-head h2{margin:0;font-size:15px;font-weight:500;color:var(--ink-soft)}
   .score{margin:0;line-height:1}
   .score .num{font-size:clamp(64px,18vw,96px);font-weight:700;font-feature-settings:"tnum";letter-spacing:-0.03em}
-  .score .pct{font-family:"Zen Kaku Gothic New",sans-serif;font-size:28px;font-weight:700;margin-left:2px}
+  .score .pct{font-family:"Zen Kaku Gothic New",sans-serif;font-size:24px;font-weight:700;margin-left:2px}
 
   .meter{position:relative;margin-top:16px;height:56px;border:2px solid var(--ink);background:var(--white)}
   .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);transition:width .9s var(--ease)}
@@ -102,9 +129,9 @@
   .tick{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--ink);opacity:.3;z-index:1}
   .meter.tape .tick{width:3px;margin-left:-1.5px;background:var(--paper);opacity:1;box-shadow:0 0 0 1px rgba(28,30,33,.35)}
   .tag{
-    position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;
-    padding:4px 14px;background:var(--red);color:var(--white);box-shadow:0 0 0 2px var(--ink);
-    font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;font-size:20px;letter-spacing:0.08em;line-height:1.3
+    position:absolute;left:12px;right:auto;top:50%;transform:translateY(-50%);z-index:2;
+    padding:4px 12px;background:var(--red);color:var(--white);box-shadow:0 0 0 2px var(--ink);
+    font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;font-size:18px;letter-spacing:0.08em;line-height:1.3
   }
   .tag[hidden]{display:none}
   .ticklabels{position:relative;height:22px;margin-top:4px;font-size:13px;color:var(--ink-soft);font-feature-settings:"tnum"}
@@ -114,45 +141,54 @@
   .ticklabels .t60{left:60%}
   .ticklabels .t100{left:100%;transform:translateX(-100%)}
 
-  .verdict{margin:24px 0 0;font-size:24px;font-weight:500;line-height:1.4;letter-spacing:-0.01em}
+  .verdict{margin:24px 0 0;font-size:24px;font-weight:700;line-height:1.4;letter-spacing:-0.01em}
 
-  .group{margin:40px 0 0;font-size:16px;font-weight:500}
+  .found{margin-top:28px}
+  .group{margin:24px 0 0;font-size:16px;font-weight:500}
+  .group:first-child{margin-top:0}
   .group + .hits{margin-top:8px}
   .hits{margin:0;padding:0;list-style:none;border-top:1.5px solid var(--ink)}
-  .hits li{padding:16px 0;border-bottom:1px solid var(--rule)}
+  .hits li{padding:14px 0;border-bottom:1px solid var(--rule)}
+  .hits li:last-child{border-bottom:none}
   .hits .t{font-weight:500;line-height:1.5}
   .hits .why{margin:4px 0 0;font-size:15px}
   .hits .words{margin:4px 0 0;font-size:13px;color:var(--ink-soft)}
-  .none{margin:32px 0 0;color:var(--ink-soft)}
+  .none{margin:0;color:var(--ink-soft)}
 
   .summary{margin-top:40px}
   .summary h3{margin:0 0 8px;font-size:20px;font-weight:500}
   .summary p{margin:0}
 
-  .ai{margin-top:40px;padding:20px 16px;background:var(--white);border:1px solid var(--rule)}
+  /* AIに聞く：切り取り線の枠 */
+  .ai{margin-top:40px;padding:20px 18px;background:var(--white);border:1.5px dashed var(--ink-soft)}
   .ai p{margin:0 0 16px;font-size:15px}
   .copy{
     display:block;width:100%;text-align:center;min-height:52px;padding:12px;line-height:1.5;border:1.5px solid var(--ink);border-radius:999px;
     background:var(--paper);color:var(--ink);font:inherit;font-size:15px;font-weight:500;cursor:pointer
   }
-  .copy.done{background:var(--ink);color:var(--paper)}
+  .copy.done{background:var(--ink);color:var(--white)}
 
   .limits{margin-top:40px;padding-top:24px;border-top:1.5px solid var(--ink)}
   .limits h3{margin:0 0 12px;font-size:20px;font-weight:500;line-height:1.5}
   .limits p{margin:0 0 12px;font-size:15px}
   .limits p:last-child{margin-bottom:0}
-  footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-soft)}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-soft)}
   footer p{margin:0 0 4px}
 
   @media (max-width:719px){
-    .meter,.ticklabels{margin-left:-24px;margin-right:-24px}
+    .meter,.ticklabels{margin-left:-16px;margin-right:-16px}
     .meter{border-left:0;border-right:0}
     .ticklabels .t0{left:16px}
     .ticklabels .t100{left:calc(100% - 16px)}
-    .tag{right:16px}
+    .tag{left:16px;right:auto}
   }
   @media (min-width:720px){
-    .wrap{padding:64px 40px 96px}
+    .wrap{padding:56px 40px 96px}
+    .sheet{padding:40px 40px 36px}
+    .hero{padding:48px 40px 40px}
+    .stamp{top:-16px;right:16px;width:96px;height:96px}
+    .stamp b{font-size:17px}
+    .stamp span{font-size:23px}
     .ai{padding:24px}
   }
   @media (prefers-reduced-motion:reduce){
@@ -163,17 +199,18 @@
 <body>
 <main class="wrap">
 
-  <header>
-    <p class="kicker">アベジョのAI仕事術｜LINE特典</p>
+  <header class="sheet hero">
+    <p class="stamp" aria-hidden="true"><b>LINE</b><span>特典</span></p>
+    <p class="kicker">アベジョのAI仕事術</p>
     <h1><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 30 28H2Z" fill="#F5C400" stroke="#1C1E21" stroke-width="2.5" stroke-linejoin="round"/><path d="M16 12v7" stroke="#1C1E21" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="23.5" r="1.8" fill="#1C1E21"/></svg><span class="ph">怪しい案件</span><span class="ph tight">チェッカー</span></h1>
-    <p class="lead"><span class="ph">応募する前に、</span><span class="ph">その案件の怪しさを</span><span class="ph">目安で確かめます。</span></p>
-    <p class="safe"><span class="ph">貼った文章は、</span><span class="ph">このページの中だけで判定します。</span><span class="ph">どこにも送られません。</span><span class="ph">結果は目安で、</span><span class="ph">怪しい案件だと</span><span class="ph">断定するものではありません。</span></p>
+    <p class="lead"><span class="ph">応募する</span><span class="ph">前に、</span><span class="ph">その</span><span class="ph">案件の</span><span class="ph">怪しさを</span><span class="ph">目安で</span><span class="ph">確かめます。</span></p>
+    <p class="safe"><span class="ph">貼った</span><span class="ph">文章は、</span><span class="ph">この</span><span class="ph">ページの</span><span class="ph">中だけで</span><span class="ph">判定します。</span><span class="ph">どこにも</span><span class="ph">送られません。</span><br><span class="ph">結果は</span><span class="ph">目安で、</span><span class="ph">怪しい</span><span class="ph">案件だと</span><span class="ph">断定する</span><span class="ph">ものではありません。</span></p>
   </header>
 
   <form id="form" novalidate>
-    <section class="step" aria-labelledby="s1">
+    <section class="step sheet" aria-labelledby="s1">
       <h2 id="s1"><span class="n">1</span>案件の本文を貼る</h2>
-      <p class="help"><span class="ph">クラウドワークスの案件ページで、</span><span class="ph">タイトルから</span><span class="ph">「クライアント情報」の終わりまでを</span><span class="ph">コピーして貼ってください。</span></p>
+      <p class="help"><span class="ph">クラウドワークスの</span><span class="ph">案件ページで、</span><span class="ph">タイトルから</span><span class="ph">「クライアント情報」の</span><span class="ph">終わりまでを</span><span class="ph">コピーして</span><span class="ph">貼ってください。</span></p>
       <label for="text" class="sr" style="position:absolute;left:-9999px">案件の本文</label>
       <textarea id="text" placeholder="ここに案件の本文を貼り付けます"></textarea>
       <div class="row">
@@ -181,9 +218,9 @@
       </div>
     </section>
 
-    <section class="step" aria-labelledby="s2">
+    <section class="step sheet" aria-labelledby="s2">
       <h2 id="s2"><span class="n">2</span>発注者の情報を選ぶ</h2>
-      <p class="help"><span class="ph">案件ページの</span><span class="ph">「クライアント情報」の欄で</span><span class="ph">確かめて、</span><span class="ph">全部選んでください。</span><span class="ph">手順1で貼った本文に</span><span class="ph">入っている項目は、</span><span class="ph">自動で選びます。</span></p>
+      <p class="help"><span class="ph">案件ページの</span><span class="ph">「クライアント情報」の</span><span class="ph">欄で</span><span class="ph">確かめて、</span><span class="ph">全部</span><span class="ph">選んでください。</span><span class="ph">手順1で</span><span class="ph">貼った</span><span class="ph">本文に</span><span class="ph">入っている</span><span class="ph">項目は、</span><span class="ph">自動で</span><span class="ph">選びます。</span></p>
       <p class="auto" id="autoNote" role="status" hidden></p>
 
       <fieldset>
@@ -251,7 +288,7 @@
 
     <h3 class="verdict" id="verdict"></h3>
 
-    <div id="hits"></div>
+    <div class="sheet found" id="hits"></div>
 
     <div class="summary">
       <h3>総評</h3>
@@ -259,16 +296,16 @@
     </div>
 
     <div class="ai">
-      <p><span class="ph">もっと詳しく知りたいときは、</span><span class="ph">下のボタンで文章をコピーして、</span><span class="ph">ChatGPTなどのAIに</span><span class="ph">貼ってください。</span><span class="ph">チェックの結果と、</span><span class="ph">貼った本文が入っています。</span></p>
+      <p><span class="ph">もっと</span><span class="ph">詳しく</span><span class="ph">知りたい</span><span class="ph">ときは、</span><span class="ph">下の</span><span class="ph">ボタンで</span><span class="ph">文章を</span><span class="ph">コピーして、</span><span class="ph">ChatGPTなどの</span><span class="ph">AIに</span><span class="ph">貼ってください。</span><span class="ph">チェックの</span><span class="ph">結果と、</span><span class="ph">貼った</span><span class="ph">本文が</span><span class="ph">入っています。</span></p>
       <button type="button" class="copy" id="copy"><span class="ph">もっと詳しくAIに聞く用の</span><span class="ph">文章をコピー</span></button>
       <p class="sr" id="copied" role="status"></p>
     </div>
 
     <section class="limits" aria-labelledby="lim">
       <h3 id="lim"><span class="ph">このチェッカーで、</span><span class="ph">完全に見抜くことは</span><span class="ph">できません</span></h3>
-      <p><span class="ph">あくまで目安にしてください。</span></p>
-      <p><span class="ph">募集文には書かれていなくても、</span><span class="ph">応募したあとのやり取りで、</span><span class="ph">結婚しているかを</span><span class="ph">聞いてくるケースがあります。</span><span class="ph">ふつうに仕事をして、</span><span class="ph">評価までもらったあとで、</span><span class="ph">スクールに勧誘されるケースも</span><span class="ph">あります。</span></p>
-      <p><span class="ph">かなり巧妙な手口もあるので、</span><span class="ph">募集文だけで</span><span class="ph">完全に判断するのは</span><span class="ph">難しいです。</span><span class="ph">募集文だけでは</span><span class="ph">100%見抜けないことを</span><span class="ph">ご理解のうえ、</span><span class="ph">応募するかどうかは、</span><span class="ph">ご自身で判断してください。</span></p>
+      <p><span class="ph">あくまで</span><span class="ph">目安に</span><span class="ph">してください。</span></p>
+      <p><span class="ph">募集文には</span><span class="ph">書かれていなくても、</span><span class="ph">応募した</span><span class="ph">あとの</span><span class="ph">やり取りで、</span><span class="ph">結婚しているかを</span><span class="ph">聞いてくる</span><span class="ph">ケースが</span><span class="ph">あります。</span><span class="ph">ふつうに</span><span class="ph">仕事を</span><span class="ph">して、</span><span class="ph">評価まで</span><span class="ph">もらった</span><span class="ph">あとで、</span><span class="ph">スクールに</span><span class="ph">勧誘される</span><span class="ph">ケースも</span><span class="ph">あります。</span></p>
+      <p><span class="ph">かなり</span><span class="ph">巧妙な</span><span class="ph">手口も</span><span class="ph">あるので、</span><span class="ph">募集文だけで</span><span class="ph">完全に</span><span class="ph">判断するのは</span><span class="ph">難しいです。</span><span class="ph">募集文だけでは</span><span class="ph">100%見抜けない</span><span class="ph">ことを</span><span class="ph">ご理解の</span><span class="ph">うえ、</span><span class="ph">応募するか</span><span class="ph">どうかは、</span><span class="ph">ご自身で</span><span class="ph">判断してください。</span></p>
     </section>
   </section>
 
@@ -282,45 +319,45 @@
   // 本文から探す項目（点数は大きい順）
   const TEXT_RULES = [
     { id:"family",  label:"家族や私生活に|踏み込んでいる", pts:60,
-      why:"記事の仕事に、|結婚や子ども、|一人暮らしかどうか、|学生かどうかは|関係ありません。",
+      why:"記事の|仕事に、|結婚や|子ども、|一人|暮らしか|どうか、|学生か|どうかは|関係ありません。",
       short:"家族や私生活を|条件にしている",
       re:/既婚|未婚|独身|同棲|配偶者|お子さん|お子様|子ども|子供|子育て|育児|恋人|結婚|一人暮らし|ひとり暮らし|生活スタイル|実家暮らし|実家住まい|学生[^。\n]{0,8}(?:不可|NG|お断り|対象外|ご遠慮)/g },
     { id:"money",   label:"先にお金を払わせる|言葉がある", pts:30,
-      why:"仕事を受ける側が|先にお金を払うのは、|よくある注意のサインです。",
+      why:"仕事を|受ける|側が|先に|お金を|払うのは、|よく|ある|注意の|サインです。",
       short:"仕事を受ける側が|先にお金を払う|言葉がある",
       re:/受講料|教材費|初期費用|登録料|研修費|入会金|購入が必要|購入していただ|費用が(?:かか|必要)/g },
     { id:"lowpay",  label:"報酬が|相場より低い", pts:15,
-      why:"クラウドワークス自身が|「相場に対して報酬額が|低い可能性があります」と|出しています。",
+      why:"クラウドワークス自身が|「相場に|対して|報酬額が|低い|可能性が|あります」と|出しています。",
       short:"報酬が|相場より低い",
       re:/相場に対して報酬額が低い/g },
     { id:"goal",    label:"目標や稼ぎたい金額に|触れている", pts:20,
-      why:"仕事を頼む相手の|「目標」を聞く理由は|ありません。",
+      why:"仕事を|頼む|相手の|「目標」を|聞く|理由は|ありません。",
       short:"目標や稼ぎたい金額に|触れている",
       re:/目標|月\s*\d+\s*万|稼ぎたい|理想のライフスタイル|独立を目指[すし]?|本業以外の収入|場所に縛られ|自由な働き方/g },
     { id:"outside", label:"LINEやZoomなど、|外へ誘導している", pts:20,
-      why:"外の連絡先や|オンライン通話に移ってから、|勧誘される流れがあります。",
+      why:"外の|連絡先や|オンライン通話に|移ってから、|勧誘される|流れが|あります。",
       short:"LINEやZoomなどへ|誘導している",
       re:/LINE|(?<!オン)(?<!ガイド)ライン(?:で|に|へ|登録|追加|ID)|Zoom|ZOOM|zoom|ズーム|電話|MTG|ミーティング|チャットワーク|Chatwork/g },
     { id:"personal",label:"性別を|聞いている", pts:10,
-      why:"記事の仕事に、|性別は関係ありません。",
+      why:"記事の|仕事に、|性別は|関係ありません。",
       short:"性別を|聞いている",
       re:/性別/g },
     { id:"newbie",  label:"未経験や挑戦したい人を|集めている", pts:20,
-      why:"仕事を頼むときは、|ふつう実績のある人に頼みます。|未経験の人を集める案件は、|勧誘のことがあります。",
+      why:"仕事を|頼む|ときは、|ふつう|実績の|ある|人に|頼みます。|未経験の|人を|集める|案件は、|勧誘の|ことがあります。",
       short:"未経験や挑戦したい人を|集めている",
       re:/挑戦してみたい|未経験|初心者大?歓迎|初心者OK|初心者の方|経験不問|スキル不要|初めての方/g },
   ];
   // 選んでもらう項目
   const SELECT_RULES = {
-    identity: { no:{pts:15, label:"本人確認をしていない", short:"本人確認を|していない", why:"本人確認は、|発注者が実在するかの|目安の1つです。"}, yes:{pts:0} },
-    rulecheck:{ no:{pts:5, label:"発注ルールチェックが未回答", short:"発注ルールチェックに|答えていない", why:"クラウドワークスの規約や、|発注に必要なルールを|確かめたかどうかの印です。|まだ答えていません。"}, yes:{pts:0} },
-    reviews:  { e0:{pts:20, label:"評価件数が0件", short:"評価件数が|0件", why:"これまでの取引の評価がなく、|どんな発注者か|分かりません。"},
-                e1:{pts:15, label:"評価件数が1〜5件", why:"取引の評価が、|まだ少なめです。"},
+    identity: { no:{pts:15, label:"本人確認をしていない", short:"本人確認を|していない", why:"本人確認は、|発注者が|実在するかの|目安の|1つです。"}, yes:{pts:0} },
+    rulecheck:{ no:{pts:5, label:"発注ルールチェックが未回答", short:"発注ルールチェックに|答えていない", why:"クラウドワークスの|規約や、|発注に|必要な|ルールを|確かめたか|どうかの|印です。|まだ|答えていません。"}, yes:{pts:0} },
+    reviews:  { e0:{pts:20, label:"評価件数が0件", short:"評価件数が|0件", why:"これまでの|取引の|評価が|なく、|どんな|発注者か|分かりません。"},
+                e1:{pts:15, label:"評価件数が1〜5件", why:"取引の|評価が、|まだ|少なめです。"},
                 e6:{pts:8, label:"評価件数が6〜10件"},
                 e11:{pts:0},
-                e31:{pts:-20, label:"評価件数が31件以上", short:"評価件数が|31件以上ある", why:"これまでに多くの取引をしている|発注者です。|怪しさを下げています。"}, },
-    icon:     { default:{pts:3, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを整えていない、|作ったばかりの発注者の|ことがあります。"}, set:{pts:0} },
-    headcount:{ big:{pts:10, label:"一度に10人以上を募集", short:"一度に10人以上を|募集している", why:"ライターを一度に10人以上|集めることは、|ふつうはあまりありません。"}, huge:{pts:20, label:"一度に100人以上を募集", short:"一度に100人以上を|募集している", why:"一度に100人以上の|ライターを集める記事の仕事は、|ふつうはありません。"}, mid:{pts:0}, small:{pts:0} },
+                e31:{pts:-20, label:"評価件数が31件以上", short:"評価件数が|31件以上ある", why:"これまでに|多くの|取引を|している|発注者です。|怪しさを|下げています。"}, },
+    icon:     { default:{pts:3, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを|整えていない、|作ったばかりの|発注者の|ことがあります。"}, set:{pts:0} },
+    headcount:{ big:{pts:10, label:"一度に10人以上を募集", short:"一度に10人以上を|募集している", why:"ライターを|一度に|10人以上|集める|ことは、|ふつうは|あまり|ありません。"}, huge:{pts:20, label:"一度に100人以上を募集", short:"一度に100人以上を|募集している", why:"一度に|100人以上の|ライターを|集める|記事の|仕事は、|ふつうは|ありません。"}, mid:{pts:0}, small:{pts:0} },
   };
   const SELECT_NAMES = { identity:"本人確認", rulecheck:"発注ルールチェック", reviews:"評価件数", icon:"アイコン", headcount:"募集人数" };
 
@@ -359,7 +396,7 @@
     }
     const note = $("autoNote");
     note.hidden = !n;
-    note.textContent = n ? `貼った本文から読み取って、${n}つ選びました。違っていたら、選び直してください。` : "";
+    if (n) phrases(note, `貼った本文から|読み取って、|${n}つ|選びました。|違っていたら、|選び直して|ください。`); else note.textContent = "";
   }
   text.addEventListener("input", autofill);
 
@@ -398,15 +435,15 @@
     const rest  = Math.max(0, texts.length - 2) + Math.max(0, sels.length - 2);
     const q = (arr) => arr.slice(0,2).map(t => "「" + t + "」").join("|");
     if (!texts.length && !sels.length){
-      parts.push("本文と発注者の情報からは、|大きな注意サインは|見つかりませんでした。|それでも、|報酬・納期・連絡の取り方は、|応募の前に|よく読んでください。");
+      parts.push("本文と|発注者の|情報からは、|大きな|注意サインは|見つかりませんでした。|それでも、|報酬・納期・連絡の|取り方は、|応募の|前に|よく|読んでください。");
     } else {
       if (texts.length) parts.push(`この案件は、|${q(texts)}|点が気になります。`);
       if (sels.length) parts.push(`${texts.length ? "さらに、|" : "発注者の情報では、|"}${q(sels)}|も、|怪しさを上げています。`);
       if (rest) parts.push(`ほかにも${rest}つ、|当てはまっています。`);
       if (r.good.length) parts.push(`ただ、|${r.good.map(g => "「" + g.short + "」").join("|")}|ので、|怪しさを下げています。`);
-      if (b.key === "low") parts.push("大きな注意サインは少なめですが、|条件はよく読んでください。");
+      if (b.key === "low") parts.push("大きな|注意サインは|少なめですが、|条件は|よく|読んでください。");
     }
-    parts.push("これは目安で、|断定するものでは|ありません。|あくまで参考にして、|最終的には|ご自身で判断してください。");
+    parts.push("これは|目安で、|断定する|ものではありません。|あくまで|参考に|して、|最終的には|ご自身で|判断してください。");
     return parts.join("|");
   }
 
