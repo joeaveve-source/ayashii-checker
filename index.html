@@ -116,6 +116,15 @@
   }
   .opts input:checked + span{background:var(--ink);color:var(--white)}
   .opts input:focus-visible + span{outline:3px solid var(--ink);outline-offset:3px}
+  /* 数字を入れる欄（評価件数・募集人数） */
+  .numrow{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .numin{
+    width:128px;min-height:48px;padding:0 14px;border:1.5px solid var(--ink);border-radius:0;background:var(--paper);
+    font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;font-size:22px;font-weight:700;font-feature-settings:"tnum";color:var(--ink);text-align:right
+  }
+  .numin:focus{background:var(--white)}
+  .numin[aria-invalid="true"]{border-color:var(--red);box-shadow:0 0 0 1px var(--red)}
+  .unit{font-size:16px;font-weight:500}
 
   /* チェックするボタン（二重枠） */
   .go{
@@ -249,8 +258,8 @@
     </section>
 
     <section class="step sheet" aria-labelledby="s2">
-      <h2 id="s2"><span class="n">2</span>発注者の情報を選ぶ</h2>
-      <p class="help"><span class="ph">案件ページの</span><span class="ph">「クライアント情報」の</span><span class="ph">欄で</span><span class="ph">確かめて、</span><span class="ph">全部</span><span class="ph">選んでください。</span><span class="ph">手順1で</span><span class="ph">貼った</span><span class="ph">本文に</span><span class="ph">入っている</span><span class="ph">項目は、</span><span class="ph">自動で</span><span class="ph">選びます。</span></p>
+      <h2 id="s2"><span class="n">2</span>発注者の情報を入れる</h2>
+      <p class="help"><span class="ph">案件ページの</span><span class="ph">「クライアント情報」の</span><span class="ph">欄で</span><span class="ph">確かめて、</span><span class="ph">全部</span><span class="ph">埋めてください。</span><span class="ph">手順1で</span><span class="ph">貼った</span><span class="ph">本文に</span><span class="ph">入っている</span><span class="ph">項目は、</span><span class="ph">自動で</span><span class="ph">入ります。</span></p>
       <p class="auto" id="autoNote" role="status" hidden></p>
 
       <fieldset>
@@ -270,13 +279,9 @@
       </fieldset>
 
       <fieldset>
-        <legend>評価件数<span class="where">発注者の欄の「総合評価」の件数</span></legend>
-        <div class="opts">
-          <label><input type="radio" name="reviews" value="e0"><span>0件</span></label>
-          <label><input type="radio" name="reviews" value="e1"><span>1〜5件</span></label>
-          <label><input type="radio" name="reviews" value="e6"><span>6〜10件</span></label>
-          <label><input type="radio" name="reviews" value="e11"><span>11〜30件</span></label>
-          <label><input type="radio" name="reviews" value="e31"><span>31件以上</span></label>
+        <legend id="lg-reviews">評価件数<span class="where">発注者の欄の「総合評価」の件数。「-」のときは0</span></legend>
+        <div class="numrow">
+          <input type="text" id="reviews" class="numin" inputmode="numeric" autocomplete="off" aria-labelledby="lg-reviews"><span class="unit">件</span>
         </div>
       </fieldset>
 
@@ -289,12 +294,9 @@
       </fieldset>
 
       <fieldset>
-        <legend>募集人数<span class="where">「応募状況」の欄の募集人数</span></legend>
-        <div class="opts">
-          <label><input type="radio" name="headcount" value="small"><span>1〜2人</span></label>
-          <label><input type="radio" name="headcount" value="mid"><span>3〜9人</span></label>
-          <label><input type="radio" name="headcount" value="big"><span>10〜99人</span></label>
-          <label><input type="radio" name="headcount" value="huge"><span>100人以上</span></label>
+        <legend id="lg-headcount">募集人数<span class="where">「応募状況」の欄の募集人数</span></legend>
+        <div class="numrow">
+          <input type="text" id="headcount" class="numin" inputmode="numeric" autocomplete="off" aria-labelledby="lg-headcount"><span class="unit">人</span>
         </div>
       </fieldset>
     </section>
@@ -381,15 +383,20 @@
   const SELECT_RULES = {
     identity: { no:{pts:15, label:"本人確認をしていない", short:"本人確認を|していない", why:"本人確認は、|発注者が|実在するかの|目安の|1つです。"}, yes:{pts:0} },
     rulecheck:{ no:{pts:5, label:"発注ルールチェックが未回答", short:"発注ルールチェックに|答えていない", why:"クラウドワークスの|規約や、|発注に|必要な|ルールを|確かめたか|どうかの|印です。|まだ|答えていません。"}, yes:{pts:0} },
+    // 評価件数と募集人数は数字で入れてもらい、下の区切りに当てはめる（{n}は入れた数字）
     reviews:  { e0:{pts:20, label:"評価件数が0件", short:"評価件数が|0件", why:"これまでの|取引の|評価が|なく、|どんな|発注者か|分かりません。"},
-                e1:{pts:15, label:"評価件数が1〜5件", why:"取引の|評価が、|まだ|少なめです。"},
-                e6:{pts:8, label:"評価件数が6〜10件"},
+                e1:{pts:15, label:"評価件数が{n}件", short:"評価件数が|{n}件", why:"取引の|評価が、|まだ|少なめです。"},
+                e6:{pts:8, label:"評価件数が{n}件"},
                 e11:{pts:0},
-                e31:{pts:-20, label:"評価件数が31件以上", short:"評価件数が|31件以上ある", why:"これまでに|多くの|取引を|している|発注者です。|怪しさを|下げています。"}, },
+                e31:{pts:-20, label:"評価件数が{n}件", short:"評価件数が|{n}件ある", why:"これまでに|多くの|取引を|している|発注者です。|怪しさを|下げています。"}, },
     icon:     { default:{pts:3, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを|整えていない、|作ったばかりの|発注者の|ことがあります。"}, set:{pts:0} },
-    headcount:{ big:{pts:10, label:"一度に10人以上を募集", short:"一度に10人以上を|募集している", why:"ライターを|一度に|10人以上|集める|ことは、|ふつうは|あまり|ありません。"}, huge:{pts:20, label:"一度に100人以上を募集", short:"一度に100人以上を|募集している", why:"一度に|100人以上の|ライターを|集める|記事の|仕事は、|ふつうは|ありません。"}, mid:{pts:0}, small:{pts:0} },
+    headcount:{ big:{pts:10, label:"一度に{n}人を募集", short:"一度に{n}人を|募集している", why:"ライターを|一度に|10人以上|集める|ことは、|ふつうは|あまり|ありません。"}, huge:{pts:20, label:"一度に{n}人を募集", short:"一度に{n}人を|募集している", why:"一度に|100人以上の|ライターを|集める|記事の|仕事は、|ふつうは|ありません。"}, mid:{pts:0}, small:{pts:0} },
   };
   const SELECT_NAMES = { identity:"本人確認", rulecheck:"発注ルールチェック", reviews:"評価件数", icon:"アイコン", headcount:"募集人数" };
+  const NUM_FIELDS = {
+    reviews:   { unit:"件", key:(n) => n === 0 ? "e0" : n <= 5 ? "e1" : n <= 10 ? "e6" : n <= 30 ? "e11" : "e31" },
+    headcount: { unit:"人", key:(n) => n >= 100 ? "huge" : n >= 10 ? "big" : n >= 3 ? "mid" : "small" },
+  };
 
   const $ = (id) => document.getElementById(id);
   const plain = (t) => t.replaceAll("|", "");
@@ -399,40 +406,60 @@
   $("clear").addEventListener("click", () => {
     text.value = "";
     form.querySelectorAll("input[type=radio]").forEach(r => r.checked = false);
+    form.querySelectorAll(".numin").forEach(i => { i.value = ""; i.removeAttribute("aria-invalid"); });
     manual.clear(); $("autoNote").hidden = true;
     $("result").hidden = true; $("error").hidden = true; text.focus();
   });
 
-  // 貼った本文（タイトル〜クライアント情報）から、発注者の情報を読み取って選ぶ。自分で選び直した項目は上書きしない
+  // 貼った本文（タイトル〜クライアント情報）から、発注者の情報を読み取って入れる。自分で選び直した・打ち直した項目は上書きしない
   const manual = new Set();
   form.addEventListener("change", (e) => { if (e.target.type === "radio") manual.add(e.target.name); });
+  form.addEventListener("input", (e) => {
+    if (e.target.classList.contains("numin")){ manual.add(e.target.id); e.target.removeAttribute("aria-invalid"); }
+  });
   function readInfo(raw){
     const t = raw.normalize("NFKC").replace(/,/g, "");
     const got = {};
     if (/本人確認未提出/.test(t)) got.identity = "no"; else if (/本人確認済/.test(t)) got.identity = "yes";
     if (/発注ルールチェック未回答/.test(t)) got.rulecheck = "no"; else if (/発注ルールチェック済/.test(t)) got.rulecheck = "yes";
     const rv = t.match(/(\d+)\s*件のレビュー/);
-    if (rv){ const n = +rv[1]; got.reviews = n === 0 ? "e0" : n <= 5 ? "e1" : n <= 10 ? "e6" : n <= 30 ? "e11" : "e31"; }
+    if (rv) got.reviews = +rv[1];
     // タイトルの下からコピーしたとき：クライアント情報の「総合評価 -」＝評価なし
-    if (!got.reviews && /総合評価\s*-/.test(t)) got.reviews = "e0";
+    if (got.reviews === undefined && /総合評価\s*-/.test(t)) got.reviews = 0;
     const hc = t.match(/募集人数\s*(\d+)\s*人/);
-    if (hc){ const n = +hc[1]; got.headcount = n >= 100 ? "huge" : n >= 10 ? "big" : n >= 3 ? "mid" : "small"; }
+    if (hc) got.headcount = +hc[1];
     return got;
   }
   function autofill(){
     let n = 0;
     for (const [name, v] of Object.entries(readInfo(text.value))){
       if (manual.has(name)) continue;
+      if (NUM_FIELDS[name]){ const el = $(name); el.value = String(v); el.removeAttribute("aria-invalid"); n++; continue; }
       const el = form.querySelector(`input[name="${name}"][value="${v}"]`);
       if (el){ el.checked = true; n++; }
     }
     const note = $("autoNote");
     note.hidden = !n;
-    if (n) phrases(note, `貼った本文から|読み取って、|${n}つ|選びました。|違っていたら、|選び直して|ください。`); else note.textContent = "";
+    if (n) phrases(note, `貼った本文から|読み取って、|${n}つの|項目を|入れました。|違っていたら、|直してください。`); else note.textContent = "";
   }
   text.addEventListener("input", autofill);
 
-  function selected(name){ const el = form.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null; }
+  // 数字の欄：全角でも、カンマ入りでも読む。数字でなければ null
+  function numValue(name){
+    const v = $(name).value.normalize("NFKC").replace(/[,\s]/g, "");
+    return /^\d+$/.test(v) ? +v : null;
+  }
+  function selected(name){
+    if (NUM_FIELDS[name]){ const n = numValue(name); return n === null ? null : NUM_FIELDS[name].key(n); }
+    const el = form.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null;
+  }
+  // {n} を入れた数字に置き換える
+  function withNum(name, item){
+    if (!NUM_FIELDS[name]) return item;
+    const n = numValue(name).toLocaleString("ja-JP"), out = { ...item };
+    for (const k of ["label", "short"]) if (out[k]) out[k] = out[k].replaceAll("{n}", n);
+    return out;
+  }
 
   function judge(){
     const raw = text.value.normalize("NFKC");
@@ -444,8 +471,8 @@
     const sel = [], good = [];
     for (const [name, map] of Object.entries(SELECT_RULES)){
       const v = selected(name);
-      if (v && map[v] && map[v].pts > 0) sel.push({ kind:"select", name, ...map[v] });
-      if (v && map[v] && map[v].pts < 0) good.push({ kind:"select", name, ...map[v] });
+      if (v && map[v] && map[v].pts > 0) sel.push({ kind:"select", name, ...withNum(name, map[v]) });
+      if (v && map[v] && map[v].pts < 0) good.push({ kind:"select", name, ...withNum(name, map[v]) });
     }
     sel.sort((a,b) => b.pts - a.pts);
     const sum = [...hits, ...sel, ...good].reduce((a,b) => a + b.pts, 0);
@@ -487,6 +514,7 @@
     lines.push(`【怪しい案件チェッカーの結果】怪しさ ${r.total}%（目安）`);
     if (r.hits.length) lines.push("当てはまったところ：" + r.hits.map(h => `${plain(h.label)}（${h.words.join("・")}）`).join("／"));
     const info = Object.keys(SELECT_NAMES).map(n => {
+      if (NUM_FIELDS[n]){ const x = numValue(n); return `${SELECT_NAMES[n]}＝${x === null ? "未入力" : x + NUM_FIELDS[n].unit}`; }
       const v = selected(n); const lab = v ? form.querySelector(`input[name="${n}"][value="${v}"]`).nextElementSibling.textContent : "未選択";
       return `${SELECT_NAMES[n]}＝${lab}`;
     }).join("／");
@@ -504,9 +532,11 @@
     if (!text.value.trim()){ err.textContent = "案件の本文を貼ってください。"; err.hidden = false; text.focus(); return; }
     const missing = Object.keys(SELECT_RULES).filter(n => !selected(n));
     if (missing.length){
-      err.textContent = "まだ選んでいない項目があります：" + missing.map(n => SELECT_NAMES[n]).join("・");
+      const bad = missing.filter(n => NUM_FIELDS[n] && $(n).value.trim());
+      err.textContent = "まだ埋めていない項目があります：" + missing.map(n => SELECT_NAMES[n]).join("・") + (bad.length ? "（件数と人数は、数字だけで入れてください）" : "");
       err.hidden = false;
-      form.querySelector(`input[name="${missing[0]}"]`).focus();
+      missing.filter(n => NUM_FIELDS[n]).forEach(n => $(n).setAttribute("aria-invalid", "true"));
+      (NUM_FIELDS[missing[0]] ? $(missing[0]) : form.querySelector(`input[name="${missing[0]}"]`)).focus();
       return;
     }
     $("error").hidden = true;
