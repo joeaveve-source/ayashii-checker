@@ -202,15 +202,13 @@
       </fieldset>
 
       <fieldset>
-        <legend>レビュー（評価）の数<span class="where">発注者の評価が何件あるか</span></legend>
+        <legend>評価件数<span class="where">発注者の欄の「総合評価」の件数</span></legend>
         <div class="opts">
-          <label><input type="radio" name="reviews" value="r0"><span>0件</span></label>
-          <label><input type="radio" name="reviews" value="r1"><span>1件</span></label>
-          <label><input type="radio" name="reviews" value="r2"><span>2〜5件</span></label>
-          <label><input type="radio" name="reviews" value="r6"><span>6〜9件</span></label>
-          <label><input type="radio" name="reviews" value="r10"><span>10〜19件</span></label>
-          <label><input type="radio" name="reviews" value="r20"><span>20〜49件</span></label>
-          <label><input type="radio" name="reviews" value="r50"><span>50件以上</span></label>
+          <label><input type="radio" name="reviews" value="e0"><span>0件</span></label>
+          <label><input type="radio" name="reviews" value="e1"><span>1〜5件</span></label>
+          <label><input type="radio" name="reviews" value="e6"><span>6〜10件</span></label>
+          <label><input type="radio" name="reviews" value="e11"><span>11〜30件</span></label>
+          <label><input type="radio" name="reviews" value="e31"><span>31件以上</span></label>
           <label><input type="radio" name="reviews" value="unknown"><span>分からない</span></label>
         </div>
       </fieldset>
@@ -280,7 +278,7 @@
 (() => {
   // 本文から探す項目（点数は大きい順）
   const TEXT_RULES = [
-    { id:"family",  label:"家族や私生活に|踏み込んでいる", pts:25,
+    { id:"family",  label:"家族や私生活に|踏み込んでいる", pts:60,
       why:"記事の仕事に、|結婚や子どもの有無、|学生かどうかは|関係ありません。",
       short:"家族や私生活を|条件にしている",
       re:/既婚|未婚|独身|同棲|配偶者|お子さん|お子様|子ども|子供|子育て|育児|恋人|結婚|学生[^。\n]{0,8}(?:不可|NG|お断り|対象外|ご遠慮)/g },
@@ -308,19 +306,17 @@
   // 選んでもらう項目
   const SELECT_RULES = {
     identity: { no:{pts:15, label:"本人確認をしていない", short:"本人確認を|していない", why:"本人確認は、|発注者が実在するかの|目安の1つです。"}, unknown:{pts:5, label:"本人確認が分からない"}, yes:{pts:0} },
-    rulecheck:{ no:{pts:10, label:"発注ルールチェックが未回答", short:"発注ルールチェックに|答えていない", why:"クラウドワークスの規約や、|発注に必要なルールを|確かめたかどうかの印です。|まだ答えていません。"}, unknown:{pts:3, label:"発注ルールチェックが分からない"}, yes:{pts:0} },
-    reviews:  { r0:{pts:15, label:"レビューが0件", short:"レビューが|1件もない", why:"これまでの取引の評価がなく、|どんな発注者か|分かりません。"},
-                r1:{pts:10, label:"レビューが1件", short:"レビューが|1件しかない", why:"取引の評価が1件だけで、|どんな発注者か|まだよく分かりません。"},
-                r2:{pts:7, label:"レビューが2〜5件", why:"取引の評価が、|まだ少なめです。"},
-                r6:{pts:4, label:"レビューが6〜9件"},
-                r10:{pts:2, label:"レビューが10〜19件"},
-                r20:{pts:0},
-                r50:{pts:-30, label:"レビューが50件以上", short:"レビューが|50件以上ある", why:"これまでに多くの取引をしている|発注者です。|怪しさを大きく下げています。"},
-                unknown:{pts:5, label:"レビューの数が分からない"} },
-    icon:     { default:{pts:10, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを整えていない、|作ったばかりの発注者の|ことがあります。"}, unknown:{pts:3, label:"アイコンが分からない"}, set:{pts:0} },
-    headcount:{ big:{pts:10, label:"一度に10人以上を募集", short:"一度に10人以上を|募集している", why:"ライターを一度に10人以上|集めることは、|ふつうはあまりありません。"}, mid:{pts:3, label:"3〜9人を募集"}, unknown:{pts:3, label:"募集人数が分からない"}, small:{pts:0} },
+    rulecheck:{ no:{pts:5, label:"発注ルールチェックが未回答", short:"発注ルールチェックに|答えていない", why:"クラウドワークスの規約や、|発注に必要なルールを|確かめたかどうかの印です。|まだ答えていません。"}, unknown:{pts:0}, yes:{pts:0} },
+    reviews:  { e0:{pts:15, label:"評価件数が0件", short:"評価件数が|0件", why:"これまでの取引の評価がなく、|どんな発注者か|分かりません。"},
+                e1:{pts:8, label:"評価件数が1〜5件", why:"取引の評価が、|まだ少なめです。"},
+                e6:{pts:4, label:"評価件数が6〜10件"},
+                e11:{pts:0},
+                e31:{pts:-20, label:"評価件数が31件以上", short:"評価件数が|31件以上ある", why:"これまでに多くの取引をしている|発注者です。|怪しさを下げています。"},
+                unknown:{pts:3, label:"評価件数が分からない"} },
+    icon:     { default:{pts:3, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを整えていない、|作ったばかりの発注者の|ことがあります。"}, unknown:{pts:0}, set:{pts:0} },
+    headcount:{ big:{pts:10, label:"一度に10人以上を募集", short:"一度に10人以上を|募集している", why:"ライターを一度に10人以上|集めることは、|ふつうはあまりありません。"}, mid:{pts:0}, unknown:{pts:0}, small:{pts:0} },
   };
-  const SELECT_NAMES = { identity:"本人確認", rulecheck:"発注ルールチェック", reviews:"レビュー", icon:"アイコン", headcount:"募集人数" };
+  const SELECT_NAMES = { identity:"本人確認", rulecheck:"発注ルールチェック", reviews:"評価件数", icon:"アイコン", headcount:"募集人数" };
 
   const DEMO = "（デモ用の架空の案件です）\n【急募★未経験OK】旅の思い出を書くWebライター募集★\n文字単価1.0円／1記事1,500文字〜\n\nこんな方におすすめ\n・ライティングに挑戦してみたい方\n・在宅で月5万円を目指したい方\n\n夜にZoomでミーティングを行うため、子育て中・学生の方のご応募はご遠慮ください。\n\n応募方法\nお名前・年齢・性別・ご職業・配偶者の有無を書いてご応募ください。\nくわしくは公式LINEでご案内します。";
 
@@ -332,7 +328,7 @@
   $("demo").addEventListener("click", () => {
     text.value = DEMO;
     $("demoNote").hidden = false;
-    const pick = { identity:"no", rulecheck:"no", reviews:"r0", icon:"default", headcount:"big" };
+    const pick = { identity:"no", rulecheck:"no", reviews:"e0", icon:"default", headcount:"big" };
     for (const [n, v] of Object.entries(pick)) form.querySelector(`input[name="${n}"][value="${v}"]`).checked = true;
     text.focus();
   });
@@ -357,6 +353,7 @@
       if (v && map[v] && map[v].pts > 0) sel.push({ kind:"select", name, ...map[v] });
       if (v && map[v] && map[v].pts < 0) good.push({ kind:"select", name, ...map[v] });
     }
+    sel.sort((a,b) => b.pts - a.pts);
     const sum = [...hits, ...sel, ...good].reduce((a,b) => a + b.pts, 0);
     const total = Math.max(0, Math.min(100, sum));
     return { hits, sel, good, total };
@@ -379,9 +376,9 @@
       parts.push("本文と発注者の情報からは、|大きな注意サインは|見つかりませんでした。|それでも、|報酬・納期・連絡の取り方は、|応募の前に|よく読んでください。");
     } else {
       if (texts.length) parts.push(`この案件は、|${q(texts)}|点が気になります。`);
-      if (sels.length) parts.push(`${texts.length ? "さらに、|" : ""}${q(sels)}|ので、|怪しさが増します。`);
+      if (sels.length) parts.push(`${texts.length ? "さらに、|" : "発注者の情報では、|"}${q(sels)}|も、|怪しさを上げています。`);
       if (rest) parts.push(`ほかにも${rest}つ、|当てはまっています。`);
-      if (r.good.length) parts.push(`ただ、|${r.good.map(g => "「" + g.short + "」").join("|")}|ので、|怪しさを大きく下げています。`);
+      if (r.good.length) parts.push(`ただ、|${r.good.map(g => "「" + g.short + "」").join("|")}|ので、|怪しさを下げています。`);
       if (b.key === "low") parts.push("大きな注意サインは少なめですが、|条件はよく読んでください。");
     }
     parts.push("これは目安で、|断定するものでは|ありません。|最終的には|ご自身で判断してください。");
