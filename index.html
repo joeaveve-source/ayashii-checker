@@ -61,7 +61,6 @@
   textarea::placeholder{color:#8A8F93}
   .row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:8px;align-items:center}
   .textbtn{background:none;border:none;padding:8px 0;font:inherit;font-size:15px;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;min-height:44px}
-  .demo-note{font-size:13px;color:var(--ink-soft)}
 
   fieldset{border:none;margin:0;padding:0 0 18px;border-bottom:1px dashed var(--rule)}
   fieldset:last-of-type{border-bottom:none}
@@ -178,9 +177,7 @@
       <label for="text" class="sr" style="position:absolute;left:-9999px">案件の本文</label>
       <textarea id="text" placeholder="ここに案件の本文を貼り付けます"></textarea>
       <div class="row">
-        <button type="button" class="textbtn" id="demo">架空の案件で試す</button>
         <button type="button" class="textbtn" id="clear">消す</button>
-        <span class="demo-note" id="demoNote" hidden>デモ用の架空の案件です（実在の案件ではありません）</span>
       </div>
     </section>
 
@@ -329,22 +326,13 @@
   };
   const SELECT_NAMES = { identity:"本人確認", rulecheck:"発注ルールチェック", reviews:"評価件数", icon:"アイコン", headcount:"募集人数" };
 
-  const DEMO = "（デモ用の架空の案件です）\n【急募★未経験OK】旅の思い出を書くWebライター募集★\n文字単価1.0円／1記事1,500文字〜\n\nこんな方におすすめ\n・ライティングに挑戦してみたい方\n・在宅で月5万円を目指したい方\n\n夜にZoomでミーティングを行うため、子育て中・学生の方のご応募はご遠慮ください。\n\n応募方法\nお名前・年齢・性別・ご職業・配偶者の有無を書いてご応募ください。\nくわしくは公式LINEでご案内します。";
-
   const $ = (id) => document.getElementById(id);
   const plain = (t) => t.replaceAll("|", "");
   function phrases(el, t){ el.textContent = ""; for (const part of t.split("|")){ const sp = document.createElement("span"); sp.className = "ph"; sp.textContent = part; el.appendChild(sp); } }
   const form = $("form"), text = $("text");
 
-  $("demo").addEventListener("click", () => {
-    text.value = DEMO;
-    $("demoNote").hidden = false;
-    const pick = { identity:"no", rulecheck:"no", reviews:"e0", icon:"default", headcount:"big" };
-    for (const [n, v] of Object.entries(pick)) form.querySelector(`input[name="${n}"][value="${v}"]`).checked = true;
-    text.focus();
-  });
   $("clear").addEventListener("click", () => {
-    text.value = ""; $("demoNote").hidden = true;
+    text.value = "";
     form.querySelectorAll("input[type=radio]").forEach(r => r.checked = false);
     manual.clear(); $("autoNote").hidden = true;
     $("result").hidden = true; $("error").hidden = true; text.focus();
