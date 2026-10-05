@@ -99,7 +99,7 @@
   .meter:not(.tape) .fill{top:calc(50% - 2px);bottom:calc(50% - 2px)}
   .meter.tape .fill{background:var(--tape)}
   .tick{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--ink);opacity:.3;z-index:1}
-  .meter.tape .tick{width:3px;margin-left:-1.5px;background:var(--paper);opacity:1}
+  .meter.tape .tick{width:3px;margin-left:-1.5px;background:var(--paper);opacity:1;box-shadow:0 0 0 1px rgba(28,30,33,.35)}
   .tag{
     position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;
     padding:4px 14px;background:var(--red);color:var(--white);box-shadow:0 0 0 2px var(--ink);
@@ -163,13 +163,13 @@
     <p class="kicker">アベジョのAI仕事術｜LINE特典</p>
     <h1><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 30 28H2Z" fill="#F5C400" stroke="#1C1E21" stroke-width="2.5" stroke-linejoin="round"/><path d="M16 12v7" stroke="#1C1E21" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="23.5" r="1.8" fill="#1C1E21"/></svg><span class="ph">怪しい案件</span><span class="ph tight">チェッカー</span></h1>
     <p class="lead"><span class="ph">応募する前に、</span><span class="ph">その案件の怪しさを</span><span class="ph">目安で確かめます。</span></p>
-    <p class="safe"><span class="ph">貼った文章は、</span><span class="ph">このページの中だけで判定します。</span><span class="ph">どこにも送られません。</span></p>
+    <p class="safe"><span class="ph">貼った文章は、</span><span class="ph">このページの中だけで判定します。</span><span class="ph">どこにも送られません。</span><span class="ph">結果は目安で、</span><span class="ph">怪しい案件だと</span><span class="ph">断定するものではありません。</span></p>
   </header>
 
   <form id="form" novalidate>
     <section class="step" aria-labelledby="s1">
       <h2 id="s1"><span class="n">1</span>案件の本文を貼る</h2>
-      <p class="help"><span class="ph">クラウドワークスなどの案件ページで、</span><span class="ph">タイトルと「仕事の詳細」を</span><span class="ph">コピーして貼ってください。</span><span class="ph">応募方法や応募の条件まで</span><span class="ph">入っていると、</span><span class="ph">くわしく判定できます。</span></p>
+      <p class="help"><span class="ph">クラウドワークスの案件ページで、</span><span class="ph">タイトルから</span><span class="ph">「クライアント情報」の終わりまでを</span><span class="ph">コピーして貼ってください。</span></p>
       <label for="text" class="sr" style="position:absolute;left:-9999px">案件の本文</label>
       <textarea id="text" placeholder="ここに案件の本文を貼り付けます"></textarea>
       <div class="row">
@@ -193,11 +193,24 @@
       </fieldset>
 
       <fieldset>
+        <legend>発注ルールチェック<span class="where">発注者の欄に「発注ルールチェック済み」とあるか</span></legend>
+        <div class="opts">
+          <label><input type="radio" name="rulecheck" value="no"><span>未回答</span></label>
+          <label><input type="radio" name="rulecheck" value="yes"><span>回答済み</span></label>
+          <label><input type="radio" name="rulecheck" value="unknown"><span>分からない</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>レビュー（評価）の数<span class="where">発注者の評価が何件あるか</span></legend>
         <div class="opts">
-          <label><input type="radio" name="reviews" value="zero"><span>0件</span></label>
-          <label><input type="radio" name="reviews" value="few"><span>1〜9件</span></label>
-          <label><input type="radio" name="reviews" value="many"><span>10件以上</span></label>
+          <label><input type="radio" name="reviews" value="r0"><span>0件</span></label>
+          <label><input type="radio" name="reviews" value="r1"><span>1件</span></label>
+          <label><input type="radio" name="reviews" value="r2"><span>2〜5件</span></label>
+          <label><input type="radio" name="reviews" value="r6"><span>6〜9件</span></label>
+          <label><input type="radio" name="reviews" value="r10"><span>10〜19件</span></label>
+          <label><input type="radio" name="reviews" value="r20"><span>20〜49件</span></label>
+          <label><input type="radio" name="reviews" value="r50"><span>50件以上</span></label>
           <label><input type="radio" name="reviews" value="unknown"><span>分からない</span></label>
         </div>
       </fieldset>
@@ -254,7 +267,7 @@
       <p class="sr" id="copied" role="status"></p>
     </div>
 
-    <p class="disclaimer"><span class="ph">言葉があるかどうかで、</span><span class="ph">機械的に点数を出しています。</span><span class="ph">まともな案件でも、</span><span class="ph">点数が出ることがあります。</span></p>
+    <p class="disclaimer"><span class="ph">この結果は目安で、</span><span class="ph">怪しい案件だと</span><span class="ph">断定するものではありません。</span><span class="ph">言葉があるかどうかで、</span><span class="ph">機械的に点数を出しています。</span><span class="ph">まともな案件でも、</span><span class="ph">点数が出ることがあります。</span><span class="ph">応募するかどうかは、</span><span class="ph">ご自身で判断してください。</span></p>
   </section>
 
   <footer>
@@ -268,29 +281,25 @@
   // 本文から探す項目（点数は大きい順）
   const TEXT_RULES = [
     { id:"family",  label:"家族や私生活に|踏み込んでいる", pts:25,
-      why:"記事の仕事に、|結婚や子どもの有無は|関係ありません。",
+      why:"記事の仕事に、|結婚や子どもの有無、|学生かどうかは|関係ありません。",
       short:"家族や私生活を|条件にしている",
-      re:/既婚|未婚|独身|同棲|配偶者|お子さん|お子様|子ども|子供|子育て|育児|恋人|結婚/g },
+      re:/既婚|未婚|独身|同棲|配偶者|お子さん|お子様|子ども|子供|子育て|育児|恋人|結婚|学生[^。\n]{0,8}(?:不可|NG|お断り|対象外|ご遠慮)/g },
     { id:"money",   label:"先にお金を払わせる|言葉がある", pts:25,
       why:"仕事を受ける側が|先にお金を払うのは、|よくある注意のサインです。",
       short:"仕事を受ける側が|先にお金を払う|言葉がある",
       re:/受講料|教材費|初期費用|登録料|研修費|入会金|購入が必要|購入していただ|費用が(?:かか|必要)/g },
-    { id:"lecture", label:"講師・説明会・研修が|出てくる", pts:20,
-      why:"記事の仕事に、|講師や説明会は、|ふつう要りません。",
-      short:"講師や説明会が|出てくる",
-      re:/講師|説明会|レクチャー|研修|勉強会|セミナー|カウンセリング|オリエンテーション/g },
     { id:"goal",    label:"目標や稼ぎたい金額に|触れている", pts:15,
       why:"仕事を頼む相手の|「目標」を聞く理由は|ありません。",
       short:"目標や稼ぎたい金額に|触れている",
-      re:/目標|月\s*\d+\s*万|稼ぎたい|理想のライフスタイル|独立を目指|本業以外の収入|場所に縛られ|自由な働き方/g },
+      re:/目標|月\s*\d+\s*万|稼ぎたい|理想のライフスタイル|独立を目指[すし]?|本業以外の収入|場所に縛られ|自由な働き方/g },
     { id:"outside", label:"LINEやZoomなど、|外へ誘導している", pts:15,
       why:"外の連絡先や|オンライン通話に移ってから、|勧誘される流れがあります。",
       short:"LINEやZoomなどへ|誘導している",
       re:/LINE|(?<!オン)(?<!ガイド)ライン(?:で|に|へ|登録|追加|ID)|Zoom|ZOOM|zoom|ズーム|電話|MTG|ミーティング|チャットワーク|Chatwork/g },
-    { id:"personal",label:"年齢・性別・本業などを|聞いている", pts:10,
+    { id:"personal",label:"年齢・性別・住まいなどを|聞いている", pts:10,
       why:"仕事の腕に|関係のない個人情報です。",
       short:"仕事に関係のない|個人情報を聞いている",
-      re:/年齢|性別|生活スタイル|一人暮らし|実家|本業|雇用形態|労働時間|職業/g },
+      re:/年齢|性別|生活スタイル|一人暮らし|実家/g },
     { id:"newbie",  label:"未経験や挑戦したい人を|集めている", pts:10,
       why:"ふつうは実績のある人に頼みます。|これ1つだけなら、|珍しくはありません。",
       short:"未経験や挑戦したい人を|集めている",
@@ -299,13 +308,21 @@
   // 選んでもらう項目
   const SELECT_RULES = {
     identity: { no:{pts:15, label:"本人確認をしていない", short:"本人確認を|していない", why:"本人確認は、|発注者が実在するかの|目安の1つです。"}, unknown:{pts:5, label:"本人確認が分からない"}, yes:{pts:0} },
-    reviews:  { zero:{pts:15, label:"レビューが0件", short:"レビューが|1件もない", why:"これまでの取引の評価がなく、|どんな発注者か|分かりません。"}, few:{pts:5, label:"レビューが1〜9件"}, unknown:{pts:5, label:"レビューの数が分からない"}, many:{pts:0} },
+    rulecheck:{ no:{pts:10, label:"発注ルールチェックが未回答", short:"発注ルールチェックに|答えていない", why:"クラウドワークスの規約や、|発注に必要なルールを|確かめたかどうかの印です。|まだ答えていません。"}, unknown:{pts:3, label:"発注ルールチェックが分からない"}, yes:{pts:0} },
+    reviews:  { r0:{pts:15, label:"レビューが0件", short:"レビューが|1件もない", why:"これまでの取引の評価がなく、|どんな発注者か|分かりません。"},
+                r1:{pts:10, label:"レビューが1件", short:"レビューが|1件しかない", why:"取引の評価が1件だけで、|どんな発注者か|まだよく分かりません。"},
+                r2:{pts:7, label:"レビューが2〜5件", why:"取引の評価が、|まだ少なめです。"},
+                r6:{pts:4, label:"レビューが6〜9件"},
+                r10:{pts:2, label:"レビューが10〜19件"},
+                r20:{pts:0},
+                r50:{pts:-30, label:"レビューが50件以上", short:"レビューが|50件以上ある", why:"これまでに多くの取引をしている|発注者です。|怪しさを大きく下げています。"},
+                unknown:{pts:5, label:"レビューの数が分からない"} },
     icon:     { default:{pts:10, label:"アイコンが初期のまま", short:"アイコンが|初期のまま", why:"プロフィールを整えていない、|作ったばかりの発注者の|ことがあります。"}, unknown:{pts:3, label:"アイコンが分からない"}, set:{pts:0} },
     headcount:{ big:{pts:10, label:"一度に10人以上を募集", short:"一度に10人以上を|募集している", why:"ライターを一度に10人以上|集めることは、|ふつうはあまりありません。"}, mid:{pts:3, label:"3〜9人を募集"}, unknown:{pts:3, label:"募集人数が分からない"}, small:{pts:0} },
   };
-  const SELECT_NAMES = { identity:"本人確認", reviews:"レビュー", icon:"アイコン", headcount:"募集人数" };
+  const SELECT_NAMES = { identity:"本人確認", rulecheck:"発注ルールチェック", reviews:"レビュー", icon:"アイコン", headcount:"募集人数" };
 
-  const DEMO = "（デモ用の架空の案件です）\n【急募★未経験OK】旅の思い出を書くWebライター募集★\n文字単価1.0円／1記事1,500文字〜\n\nこんな方におすすめ\n・ライティングに挑戦してみたい方\n・在宅で月5万円を目指したい方\n\n初回は、講師がオンラインの説明会でレクチャーします。\n夜にZoomでミーティングを行うため、子育て中の方のご応募はご遠慮ください。\n\n応募方法\nお名前・年齢・性別・ご職業・配偶者の有無を書いてご応募ください。\nくわしくは公式LINEでご案内します。";
+  const DEMO = "（デモ用の架空の案件です）\n【急募★未経験OK】旅の思い出を書くWebライター募集★\n文字単価1.0円／1記事1,500文字〜\n\nこんな方におすすめ\n・ライティングに挑戦してみたい方\n・在宅で月5万円を目指したい方\n\n夜にZoomでミーティングを行うため、子育て中・学生の方のご応募はご遠慮ください。\n\n応募方法\nお名前・年齢・性別・ご職業・配偶者の有無を書いてご応募ください。\nくわしくは公式LINEでご案内します。";
 
   const $ = (id) => document.getElementById(id);
   const plain = (t) => t.replaceAll("|", "");
@@ -315,7 +332,7 @@
   $("demo").addEventListener("click", () => {
     text.value = DEMO;
     $("demoNote").hidden = false;
-    const pick = { identity:"no", reviews:"zero", icon:"default", headcount:"big" };
+    const pick = { identity:"no", rulecheck:"no", reviews:"r0", icon:"default", headcount:"big" };
     for (const [n, v] of Object.entries(pick)) form.querySelector(`input[name="${n}"][value="${v}"]`).checked = true;
     text.focus();
   });
@@ -334,13 +351,15 @@
       const found = [...new Set((raw.match(r.re) || []).map(s => s.trim()))];
       if (found.length) hits.push({ kind:"text", ...r, words: found.slice(0,5) });
     }
-    const sel = [];
+    const sel = [], good = [];
     for (const [name, map] of Object.entries(SELECT_RULES)){
       const v = selected(name);
       if (v && map[v] && map[v].pts > 0) sel.push({ kind:"select", name, ...map[v] });
+      if (v && map[v] && map[v].pts < 0) good.push({ kind:"select", name, ...map[v] });
     }
-    const total = Math.min(100, [...hits, ...sel].reduce((a,b) => a + b.pts, 0));
-    return { hits, sel, total };
+    const sum = [...hits, ...sel, ...good].reduce((a,b) => a + b.pts, 0);
+    const total = Math.max(0, Math.min(100, sum));
+    return { hits, sel, good, total };
   }
 
   function band(score){
@@ -362,6 +381,7 @@
       if (texts.length) parts.push(`この案件は、|${q(texts)}|点が気になります。`);
       if (sels.length) parts.push(`${texts.length ? "さらに、|" : ""}${q(sels)}|ので、|怪しさが増します。`);
       if (rest) parts.push(`ほかにも${rest}つ、|当てはまっています。`);
+      if (r.good.length) parts.push(`ただ、|${r.good.map(g => "「" + g.short + "」").join("|")}|ので、|怪しさを大きく下げています。`);
       if (b.key === "low") parts.push("大きな注意サインは少なめですが、|条件はよく読んでください。");
     }
     parts.push("これは目安で、|断定するものでは|ありません。|最終的には|ご自身で判断してください。");
@@ -406,10 +426,11 @@
     const groups = [
       ["本文から見つかったこと", r.hits.slice().sort((a,b)=>b.pts-a.pts)],
       ["発注者の情報", r.sel],
+      ["安心できる点", r.good],
     ];
     if (!r.hits.length && !r.sel.length){
       const p = document.createElement("p"); p.className = "none";
-      p.textContent = "当てはまったところはありませんでした。"; box.appendChild(p);
+      p.textContent = "気になるところは見つかりませんでした。"; box.appendChild(p);
     }
     for (const [title, list] of groups){
       if (!list.length) continue;
